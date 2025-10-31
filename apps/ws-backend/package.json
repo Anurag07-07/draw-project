@@ -5,15 +5,19 @@
   "type": "module",
   "types": "index.d.ts",
   "scripts": {
-    "build":"tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
     "start": "node ./dist/index.js",
-    "dev":"npm run build && nm run start"
+    "dev": "npm run build && npm run start"
   },
   "devDependencies": {
-    "@repo/typescript-config":"workspace:*"
+    "@repo/typescript-config": "workspace:*"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@types/ws": "^8.18.1",
+    "ws": "^8.18.3"
+  }
 }
