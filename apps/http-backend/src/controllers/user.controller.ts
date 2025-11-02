@@ -120,12 +120,51 @@ export const SignIn = async (req: Request, res: Response) => {
   }
 };
 
-
-export const roomCreation = async(req:Request,res:Response)=>{
-  
-  try {
-    
-  } catch (error) {
-    
+export const roomCreation = async (req: Request, res: Response) => {
+  const checkRoom = UserChatValidation.safeParse(req.body);
+  if (!checkRoom.success) {
+    return res.status(400).json({
+      message: "Invalid room data",
+      error: checkRoom.error.message,
+    });
   }
-}
+
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({
+        message: "Unauthorized - please login first",
+      });
+    }
+
+    const { slug } = req.body;
+
+    const existingRoom = await prisma.room.findUnique({
+      where: { slug },
+    });
+
+    if (existingRoom) {
+      return res.status(409).json({
+        message: "Room with this slug already exists",
+      });
+    }
+
+    const roomCreated = await prisma.room.create({
+      data: {
+        adminId: userId,
+        slug,
+      },
+    });
+
+    return res.status(201).json({
+      message: "Room created successfully",
+      roomId: roomCreated.id,
+    });
+  } catch (error) {
+    console.error("Room creation error:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+  }
+};
