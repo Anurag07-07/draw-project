@@ -7,7 +7,6 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const SignUp = async (req: Request, res: Response) => {
-  // Validate incoming data
   const checkValidation = UserSignupValidation.safeParse(req.body);
 
   if (!checkValidation.success) {
@@ -102,7 +101,6 @@ export const SignIn = async (req: Request, res: Response) => {
     //  Send token in HTTP-only cookie (more secure)
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // only secure in production
       sameSite: "strict",
       maxAge: 60 * 60 * 1000, 
     });
