@@ -3,8 +3,7 @@ import jwt from 'jsonwebtoken'
 import {Request,Response} from 'express'
 import {prisma} from '@repo/db/db'
 import {UserSignupValidation,UserSigninValidation,UserChatValidation} from '@repo/common/common'
-import dotenv from 'dotenv'
-dotenv.config()
+
 
 export const SignUp = async (req: Request, res: Response) => {
   const checkValidation = UserSignupValidation.safeParse(req.body);

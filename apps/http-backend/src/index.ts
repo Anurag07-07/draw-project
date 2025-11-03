@@ -2,6 +2,8 @@ import e from "express";
 import cors from 'cors'
 import userrouter from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
+import dotenv from 'dotenv'
+dotenv.config()
 const app = e()
 
 
