@@ -165,3 +165,35 @@ export const roomCreation = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getChat = async (req: Request, res: Response) => {
+  try {
+    const roomId = parseInt(req.params.id as string);
+
+    const message = await prisma.chat.findMany({
+      where: {
+        roomId: roomId,
+      },
+      orderBy: {
+         id: "asc"
+      }
+    });
+
+    console.log(message);
+    
+
+    if (!message) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    return res.status(200).json({
+      chats:message 
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+  }
+};
