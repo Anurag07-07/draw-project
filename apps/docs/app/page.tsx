@@ -1,5 +1,7 @@
+import Navbar from "./_components/Navbar";
+
 export default function Page() {
   return <div>
-    Edunax Draw App 
+    <Navbar></Navbar>
   </div>
 }
