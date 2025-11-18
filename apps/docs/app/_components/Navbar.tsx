@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 const Navbar = () => {
@@ -6,7 +7,7 @@ const Navbar = () => {
       <div className=' flex justify-between w-full'>
         <div>Logo</div>
         <div>Navbar</div>
-        <div className=' hidden/*'>Signup</div>
+        <Link href={"/signup"}>Signup</Link>
       </div>
     </div>
   )

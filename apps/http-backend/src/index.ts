@@ -8,7 +8,12 @@ const app = e()
 
 
 app.use(e.json())
-app.use(cors())
+app.use(cors(
+  {
+    origin:["http://localhost:3001"],
+    credentials:true
+  }
+))
 app.use(cookieParser())
 
 app.use('/api/v1',userrouter)
