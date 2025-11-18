@@ -26,9 +26,8 @@ export default function Signup(){
   async function SubmitHandler(e:FormEvent<HTMLFormElement>){
     e.preventDefault()
     try {
-    const response = await axios.post(`http://localhost:3000/api/v1/signup`,{
-      user
-    },{
+    const response = await axios.post(`http://localhost:3000/api/v1/signup`,
+      user,{
       withCredentials:true
     })
     
@@ -51,7 +50,7 @@ export default function Signup(){
     </div>
      <div>
       <label htmlFor="password">Password</label>
-      <input placeholder="Enter the password..." value={user.password} id="password" name="password" onChange={ChangeHandler} type="text" />
+      <input placeholder="Enter the password..." value={user.password} id="password" name="password" onChange={ChangeHandler} type="password" />
     </div>
     <div>
     <button type="submit">
