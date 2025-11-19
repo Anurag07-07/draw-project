@@ -2,8 +2,11 @@
 
 import axios from "axios"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useState } from "react"
 import { toast } from "sonner"
+
+import Cookies from 'js-cookie'
 
 interface IUser{
   username:string,
@@ -16,6 +19,8 @@ export default function Signin(){
     username:"",
     password:""
   })
+
+  const router = useRouter()
 
   const ChangeHandler = (e:ChangeEvent<HTMLInputElement>)=>{
       const {name,value} = e.target
@@ -30,8 +35,12 @@ export default function Signin(){
       })
       
       if (response.data || response) {
-        toast.success(`${response.data.token}`)
-        console.log(response.data);
+        toast.success(`User signin succesfully`)
+        Cookies.set("token", response.data.token, { expires: 7 });
+        router.push('/dashboard')
+      }else{
+        console.log(`Data not recieved`);
+        
       }
      } catch (error) {
       console.error(error);
