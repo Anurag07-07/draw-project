@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const config = {
-  matcher:['/',"/signin","/signup","/dashboard/:path*"]
+  matcher:['/',"/signin","/signup"]
 }
 
-export default async function proxy(req:NextRequest,res:NextResponse){
+export default async function proxy(req:NextRequest){
   const token = req.cookies.get('token')?.value
   const publicRoutes = ["/signup","/signin"]
   const isPublic = publicRoutes.includes(req.nextUrl.pathname)
