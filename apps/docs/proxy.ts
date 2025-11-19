@@ -9,7 +9,7 @@ export default async function proxy(req:NextRequest,res:NextResponse){
   const publicRoutes = ["/signup","/signin"]
   const isPublic = publicRoutes.includes(req.nextUrl.pathname)
   if (!token && !isPublic) {
-    return NextResponse.redirect(new URL('/signup',req.url))
+    return NextResponse.redirect(new URL('/signin',req.url))
   }
   if (token && isPublic) {
     return NextResponse.redirect(new URL('/',req.url))
