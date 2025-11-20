@@ -37,7 +37,7 @@ export default function Signin(){
       if (response.data || response) {
         toast.success(`User signin succesfully`)
         Cookies.set("token", response.data.token, { expires: 7 });
-        router.push('/dashboard')
+        router.push('/')
       }else{
         console.log(`Data not recieved`);
         
