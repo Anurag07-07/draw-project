@@ -1,22 +1,38 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
-import photo from '../../public/merry-christmas-1093758_1920.jpg'
+import Image from "next/image";
+import Link from "next/link";
+
+import Pencil from '../../public/Silhouette_quill_writing_curves___Premium_Vector-removebg-preview.png'
+
 const Main = () => {
   return (
-    <div className=' relative bg-yellow-400 min-h-[calc(100vh-96px)] flex justify-center items-center flex-col'>
-      <Image className=' absolute w-full h-full object-cover z-10'  src={photo} alt='background'></Image>
-      <div className=' z-20'>
+    <div className="relative h-screen w-full overflow-hidden">
 
-      <div>EDUNAX DRAW APP</div>
-      <div>DRAW THE</div>
-      <div className=' uppercase'>Imagination</div>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover"
+      >
+        <source src="/myvideo.mp4" type="video/mp4" />
+      </video>
+
+      <div className="relative z-20 flex flex-col items-center justify-center h-full text-white text-4xl font-bold">
+        <div>EDUNAX DRAW APP</div>
+        <div>DRAW THE</div>
+        <div className="uppercase">Imagination</div>
+
+        <Link href="/dashboard" className="mt-4 text-xl underline">
+          Show Dashboard
+        </Link>
+      </div>
       <div>
-        <Link href={'/dashboard'}>Show Dashboard</Link>
+        <Image src={Pencil} alt="logo"></Image>
       </div>
-      </div>
-    </div>
-  )
-}
 
-export default Main
+      <div className="absolute inset-0 bg-black/40 z-10"></div>
+    </div>
+  );
+};
+
+export default Main;

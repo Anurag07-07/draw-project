@@ -57,7 +57,7 @@ export default function Signin(){
         <input type="text" placeholder="Enter the username..." value={user.username} name="username" id="username" onChange={ChangeHandler} />
       </div>
       <div>
-        <label htmlFor="password">Email</label>
+        <label htmlFor="password">Password</label>
         <input type="password" placeholder="Enter the password..." value={user.password} name="password" id="password" onChange={ChangeHandler} />
       </div>
       <div>
