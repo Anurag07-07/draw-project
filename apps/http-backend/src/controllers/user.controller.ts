@@ -100,7 +100,8 @@ export const SignIn = async (req: Request, res: Response) => {
     //  Send token in HTTP-only cookie (more secure)
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "lax", // Changed from 'strict' to allow cross-origin requests
+      path: "/",
       maxAge: 60 * 60 * 1000, 
     });
 
@@ -196,4 +197,16 @@ export const getChat = async (req: Request, res: Response) => {
       error: (error as Error).message,
     });
   }
+};
+
+
+export const Logout = (req: Request, res: Response) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    sameSite: "lax", // Changed from 'strict' to 'lax' to allow cross-origin cookie deletion
+    path: "/",
+    expires: new Date(0), // delete cookie
+  });
+
+  return res.status(200).json({ message: "Logged out successfully" });
 };
