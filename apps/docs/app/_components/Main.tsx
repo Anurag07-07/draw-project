@@ -109,7 +109,7 @@ const Main = () => {
               whileHover={{ scale: 1.07 }}
               whileTap={{ scale: 0.95 }}
               className="
-                relative px-6 py-3 md:px-10 md:py-4 rounded-full 
+                relative px-6 py-2 md:px-10 md:py-2 rounded-full 
                 font-extralight text-base md:text-xl tracking-wide
                 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500
                 shadow-[0_0_15px_rgba(168,85,247,0.6)]
