@@ -28,7 +28,7 @@ interface Room {
 const GridBackground = () => (
   <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
     <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
-    <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+    <div className="absolute inset-0 bg-linear-to-b from-black via-transparent to-black" />
   </div>
 )
 
@@ -70,7 +70,7 @@ const RoomCard = ({
       className="group relative p-8 border border-white/10 bg-neutral-950/30 hover:bg-neutral-900/50 hover:border-white/20 transition-all duration-500 overflow-hidden"
     >
       {/* Gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-linear-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative z-10">
         {/* Header */}
