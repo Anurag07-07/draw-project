@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import Cookies from 'js-cookie'
 import { Toaster, toast } from "sonner"
+import Link from "next/link"
 
 // --- Components ---
 
@@ -23,7 +24,7 @@ const GridBackground = () => (
     {/* Subtle Grid */}
     <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
     {/* Vignette */}
-    <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+    <div className="absolute inset-0 bg-linear-to-b from-black via-transparent to-black" />
   </div>
 )
 
@@ -115,18 +116,17 @@ export default function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           
-          <a href="/" className="flex items-center gap-3 group z-50">
+          <Link href="/" className="flex items-center gap-3 group z-50">
             <div className="w-8 h-8 bg-white text-black flex items-center justify-center rounded-sm font-bold text-lg group-hover:scale-90 transition-transform duration-300">
               E
             </div>
             <span className="text-lg font-bold tracking-widest uppercase">Edunax</span>
-          </a>
+          </Link>
 
           <div className="hidden md:flex items-center gap-12">
             <NavItem href="/dashboard">Dashboard</NavItem>
             <NavItem href="/projects">Projects</NavItem>
             <NavItem href="/community">Community</NavItem>
-            
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
@@ -233,7 +233,7 @@ export default function LandingPage() {
         </motion.div>
       </main>
       <div className="w-full max-w-7xl mx-auto px-6 mb-32">
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="h-px w-full bg-linear-to-r from-transparent via-white/20 to-transparent" />
       </div>
 
       <section className="max-w-7xl mx-auto px-6 pb-32">
