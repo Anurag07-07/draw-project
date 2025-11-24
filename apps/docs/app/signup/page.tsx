@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import axios, { AxiosError } from "axios"
 import { Toaster, toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 // --- Components ---
 
@@ -66,6 +67,8 @@ export default function Signup() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
+  const router = useRouter()
+
   // Handle mouse move for spotlight effect
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { currentTarget, clientX, clientY } = e
@@ -79,41 +82,42 @@ export default function Signup() {
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  e.preventDefault();
 
-    // Basic Client-side validation
-    if (formData.password.length < 6) {
-      toast.error("Password is too short")
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      // --- REAL API CALL (Uncomment when backend is ready) ---
-      // const response = await axios.post(`http://localhost:3000/api/v1/signup`, formData, { withCredentials: true })
-
-      // --- SIMULATED NETWORK REQUEST (For Demo) ---
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      // Assume success
-      setIsSuccess(true)
-      toast.success("Account created successfully!")
-
-      // Redirect logic would go here
-      // setTimeout(() => router.push('/signin'), 2000)
-
-    } catch (err) {
-      console.error(err)
-      toast.error(
-        err instanceof AxiosError && err.response?.data?.message
-          ? err.response.data.message
-          : "Something went wrong. Please try again."
-      )
-    } finally {
-      setLoading(false)
-    }
+  if (formData.password.length < 6) {
+    toast.error("Password is too short");
+    return;
   }
+
+  setLoading(true);
+
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/api/v1/signup",
+      formData,
+      { withCredentials: true }
+    );
+
+    // If signup done successfully
+    setIsSuccess(true);
+    toast.success(response.data.message || "Account created successfully!");
+
+    // Redirect after success
+    setTimeout(() => router.push("/signin"), 2000);
+
+  } catch (err) {
+    console.error(err);
+
+    toast.error(
+      err instanceof AxiosError && err.response?.data?.message
+        ? err.response.data.message
+        : "Something went wrong. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div

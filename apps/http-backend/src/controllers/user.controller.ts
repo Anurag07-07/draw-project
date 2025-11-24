@@ -210,3 +210,23 @@ export const Logout = (req: Request, res: Response) => {
 
   return res.status(200).json({ message: "Logged out successfully" });
 };
+
+
+export const getRooms = async(req:Request,res:Response)=>{
+  try {
+    const rooms = await prisma.room.findMany({
+      where:{
+        adminId: req.userId
+      }
+    })
+
+    return res.status(200).json({
+      rooms
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    })
+  }
+}
