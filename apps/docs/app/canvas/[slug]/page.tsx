@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef, use } from "react"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import {
   Square,
@@ -15,7 +16,8 @@ import {
   Send,
   X,
   Palette,
-  Loader2
+  Loader2,
+  Share2
 } from "lucide-react"
 import { Toaster, toast } from "sonner"
 import axios from "axios"
@@ -52,6 +54,7 @@ type ToolType = 'rectangle' | 'circle' | 'line' | 'pencil' | 'text' | 'select'
 export default function CanvasPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params)
   const roomSlug = resolvedParams.slug
+  const router = useRouter()
 
   // Canvas state
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -81,10 +84,14 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
   useEffect(() => {
     const loadRoomData = async () => {
       try {
+        console.log("Loading room:", roomSlug)
+
         // Get room info
         const roomResponse = await axios.get(`http://localhost:3000/api/v1/room/${roomSlug}`, {
           withCredentials: true
         })
+
+        console.log("Room response:", roomResponse.data)
         const room = roomResponse.data.room
 
         if (!room) {
@@ -105,14 +112,28 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
           console.log("No existing drawings or endpoint not available yet")
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error loading room:", error)
-        toast.error("Failed to load room")
+        console.error("Error response:", error.response)
+
+        if (error.response?.status === 401) {
+          toast.error("Please login to join the room")
+          router.push(`/signin?redirect=/canvas/${roomSlug}`)
+        } else if (error.response?.status === 404) {
+          toast.error("Room not found")
+          setTimeout(() => {
+            router.push('/')
+          }, 2000)
+        } else if (error.code === 'ERR_NETWORK' || !error.response) {
+          toast.error("Backend server not running. Please start it on port 3000")
+        } else {
+          toast.error(error.response?.data?.message || "Failed to load room")
+        }
       }
     }
 
     loadRoomData()
-  }, [roomSlug])
+  }, [roomSlug, router])
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -136,7 +157,9 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
         ws.onopen = () => {
           console.log("WebSocket connected")
           setIsConnected(true)
-          ws.send(JSON.stringify({ type: 'join_room', roomId: roomId.toString() }))
+          if (roomId) {
+            ws.send(JSON.stringify({ type: 'join_room', roomId: roomId.toString() }))
+          }
         }
 
         ws.onmessage = (event) => {
@@ -183,7 +206,9 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
 
     return () => {
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        wsRef.current.send(JSON.stringify({ type: 'leave_room', roomId: roomId.toString() }))
+        if (roomId) {
+          wsRef.current.send(JSON.stringify({ type: 'leave_room', roomId: roomId.toString() }))
+        }
         wsRef.current.close()
       }
     }
@@ -482,6 +507,16 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
               )}
             </button>
             <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href)
+                toast.success("Link copied to clipboard")
+              }}
+              className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+              title="Share Link"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+            <button
               onClick={downloadCanvas}
               className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
             >
@@ -570,7 +605,7 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
           initial={{ x: 400 }}
           animate={{ x: 0 }}
           exit={{ x: 400 }}
-          className="absolute top-0 right-0 w-96 h-full bg-black/90 backdrop-blur-md border-l border-white/10 z-20 flex flex-col"
+          className="fixed top-0 right-0 w-96 h-[100dvh] bg-black/90 backdrop-blur-md border-l border-white/10 z-20 flex flex-col"
         >
           <div className="flex items-center justify-between p-4 border-b border-white/10">
             <h2 className="text-lg font-medium">Chat</h2>

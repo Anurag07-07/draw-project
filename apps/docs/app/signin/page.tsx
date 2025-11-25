@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import axios from "axios"
-import { useRouter } from "next/navigation"
-import { ChangeEvent, FormEvent, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { ChangeEvent, FormEvent, useState, Suspense } from "react"
 import { toast } from "sonner"
 import Cookies from 'js-cookie'
 import { motion } from "framer-motion"
@@ -14,13 +14,15 @@ interface IUser {
   password: string
 }
 
-export default function Signin() {
+function SigninContent() {
   const [user, setUser] = useState<IUser>({
     username: "",
     password: ""
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get('redirect')
 
   const ChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -38,7 +40,11 @@ export default function Signin() {
       if (response.data || response) {
         toast.success(`Welcome back!`)
         Cookies.set("token", response.data.token, { expires: 7 });
-        router.push('/')
+        if (redirect) {
+          router.push(redirect)
+        } else {
+          router.push('/')
+        }
       } else {
         toast.error("Something went wrong")
       }
@@ -230,5 +236,13 @@ export default function Signin() {
         </div>
       </motion.div>
     </div>
+  )
+}
+
+export default function Signin() {
+  return (
+    <Suspense fallback={<div className="min-h-screen w-full flex items-center justify-center bg-black text-white">Loading...</div>}>
+      <SigninContent />
+    </Suspense>
   )
 }
