@@ -122,6 +122,145 @@ wss.on('connection', async (socket, request) => {
           }
         }
 
+        // DRAW -------------------------------------------------
+        if (parseData.type === "draw") {
+          const { roomId, element } = parseData;
+
+          try {
+            // Save drawing element to database
+            const savedElement = await prisma.drawingElement.create({
+              data: {
+                id: element.id,
+                roomId: parseInt(roomId),
+                userId: userId,
+                type: element.type,
+                x: element.x,
+                y: element.y,
+                width: element.width,
+                height: element.height,
+                radius: element.radius,
+                path: element.path ? JSON.stringify(element.path) : null,
+                text: element.text,
+                strokeColor: element.strokeColor || "#000000",
+                fillColor: element.fillColor,
+                strokeWidth: element.strokeWidth || 2,
+                opacity: element.opacity || 1
+              }
+            });
+
+            // Broadcast to all users in the room
+            users.forEach((u) => {
+              try {
+                if (u.rooms.includes(roomId)) {
+                  u.ws.send(JSON.stringify({
+                    type: "draw",
+                    element: {
+                      ...savedElement,
+                      path: savedElement.path ? JSON.parse(savedElement.path) : null
+                    },
+                    roomId
+                  }));
+                }
+              } catch (sendErr) {
+                console.error("Error broadcasting draw:", sendErr);
+              }
+            });
+          } catch (dbErr) {
+            console.error("DB Draw save error:", dbErr);
+          }
+        }
+
+        // UPDATE DRAWING ELEMENT ---------------------------------
+        if (parseData.type === "update_draw") {
+          const { roomId, elementId, updates } = parseData;
+
+          try {
+            const updatedElement = await prisma.drawingElement.update({
+              where: { id: elementId },
+              data: {
+                ...updates,
+                path: updates.path ? JSON.stringify(updates.path) : undefined
+              }
+            });
+
+            // Broadcast update to all users in the room
+            users.forEach((u) => {
+              try {
+                if (u.rooms.includes(roomId)) {
+                  u.ws.send(JSON.stringify({
+                    type: "update_draw",
+                    element: {
+                      ...updatedElement,
+                      path: updatedElement.path ? JSON.parse(updatedElement.path) : null
+                    },
+                    roomId
+                  }));
+                }
+              } catch (sendErr) {
+                console.error("Error broadcasting update:", sendErr);
+              }
+            });
+          } catch (dbErr) {
+            console.error("DB Update error:", dbErr);
+          }
+        }
+
+        // DELETE DRAWING ELEMENT ---------------------------------
+        if (parseData.type === "delete_draw") {
+          const { roomId, elementId } = parseData;
+
+          try {
+            await prisma.drawingElement.delete({
+              where: { id: elementId }
+            });
+
+            // Broadcast deletion to all users in the room
+            users.forEach((u) => {
+              try {
+                if (u.rooms.includes(roomId)) {
+                  u.ws.send(JSON.stringify({
+                    type: "delete_draw",
+                    elementId,
+                    roomId
+                  }));
+                }
+              } catch (sendErr) {
+                console.error("Error broadcasting delete:", sendErr);
+              }
+            });
+          } catch (dbErr) {
+            console.error("DB Delete error:", dbErr);
+          }
+        }
+
+        // CLEAR ALL DRAWINGS -------------------------------------
+        if (parseData.type === "clear_canvas") {
+          const { roomId } = parseData;
+
+          try {
+            await prisma.drawingElement.deleteMany({
+              where: { roomId: parseInt(roomId) }
+            });
+
+            // Broadcast clear to all users in the room
+            users.forEach((u) => {
+              try {
+                if (u.rooms.includes(roomId)) {
+                  u.ws.send(JSON.stringify({
+                    type: "clear_canvas",
+                    roomId
+                  }));
+                }
+              } catch (sendErr) {
+                console.error("Error broadcasting clear:", sendErr);
+              }
+            });
+          } catch (dbErr) {
+            console.error("DB Clear error:", dbErr);
+          }
+        }
+
+
       } catch (error) {
         console.error("Message handler error:", error);
       }

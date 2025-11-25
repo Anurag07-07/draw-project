@@ -8,6 +8,7 @@ import {UserSignupValidation,UserSigninValidation,UserChatValidation} from '@rep
 export const SignUp = async (req: Request, res: Response) => {
   const checkValidation = UserSignupValidation.safeParse(req.body);
 
+
   if (!checkValidation.success) {
     return res.status(400).json({
       message: "Invalid data",
@@ -230,3 +231,87 @@ export const getRooms = async(req:Request,res:Response)=>{
     })
   }
 }
+
+export const getDrawings = async (req: Request, res: Response) => {
+  try {
+    const roomId = parseInt(req.params.id as string);
+
+    if (isNaN(roomId)) {
+      return res.status(400).json({ message: "Invalid room ID" });
+    }
+
+    const drawings = await prisma.drawingElement.findMany({
+      where: {
+        roomId: roomId,
+      },
+      orderBy: {
+        createdAt: "asc"
+      }
+    });
+
+    return res.status(200).json({
+      drawings
+    });
+
+  } catch (error) {
+    console.error("Get drawings error:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+  }
+};
+
+export const getRoomBySlug = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+
+    const room = await prisma.room.findUnique({
+      where: {
+        slug: slug
+      }
+    });
+
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    return res.status(200).json({
+      room
+    });
+
+  } catch (error) {
+    console.error("Get room error:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+  }
+};
+
+export const getToken = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET not defined");
+    }
+
+    const token = jwt.sign(
+      { _id: userId },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return res.status(200).json({ token });
+  } catch (error) {
+    console.error("Get token error:", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: (error as Error).message,
+    });
+  }
+};
