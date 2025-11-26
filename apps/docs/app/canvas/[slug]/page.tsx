@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { Toaster, toast } from "sonner"
 import axios from "axios"
+import { HTTP_BACKEND, WS_BACKEND } from "../../config"
 
 // Types
 interface DrawingElement {
@@ -87,7 +88,7 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
         console.log("Loading room:", roomSlug)
 
         // Get room info
-        const roomResponse = await axios.get(`http://localhost:3000/api/v1/room/${roomSlug}`, {
+        const roomResponse = await axios.get(`${HTTP_BACKEND}/api/v1/room/${roomSlug}`, {
           withCredentials: true
         })
 
@@ -104,7 +105,7 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
         // Load existing drawings
         try {
           const drawingsResponse = await axios.get(
-            `http://localhost:3000/api/v1/rooms/${room.id}/drawings`,
+            `${HTTP_BACKEND}/api/v1/rooms/${room.id}/drawings`,
             { withCredentials: true }
           )
           setElements(drawingsResponse.data.drawings || [])
@@ -142,7 +143,7 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
     const connectWebSocket = async () => {
       try {
         // Fetch a fresh token for WebSocket connection
-        const tokenResponse = await axios.get('http://localhost:3000/api/v1/token', {
+        const tokenResponse = await axios.get(`${HTTP_BACKEND}/api/v1/token`, {
           withCredentials: true
         })
         const token = tokenResponse.data.token
@@ -152,7 +153,7 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
           return
         }
 
-        const ws = new WebSocket(`ws://localhost:8080?token=${token}`)
+        const ws = new WebSocket(`${WS_BACKEND}?token=${token}`)
 
         ws.onopen = () => {
           console.log("WebSocket connected")

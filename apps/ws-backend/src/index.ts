@@ -31,7 +31,10 @@ function checkUser(token: string): string | null {
   }
 }
 
-const wss = new WebSocketServer({ port: 8080 });
+const PORT = parseInt(process.env.PORT || '8080');
+const wss = new WebSocketServer({ port: PORT });
+
+console.log(`WebSocket server is running on port ${PORT}`);
 
 wss.on('connection', async (socket, request) => {
   try {

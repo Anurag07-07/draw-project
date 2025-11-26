@@ -15,6 +15,7 @@ import {
 import axios from "axios"
 import Link from "next/link"
 import { Toaster, toast } from "sonner"
+import { HTTP_BACKEND } from "../config"
 
 interface Room {
   id: number
@@ -127,7 +128,7 @@ export default function RoomsPage() {
   const fetchRooms = async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(`http://localhost:3000/api/v1/rooms`, {
+      const response = await axios.get(`${HTTP_BACKEND}/api/v1/rooms`, {
         withCredentials: true
       })
       setRooms(response.data.rooms)

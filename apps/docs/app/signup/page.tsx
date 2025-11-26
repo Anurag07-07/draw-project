@@ -17,6 +17,7 @@ import {
 import axios, { AxiosError } from "axios"
 import { Toaster, toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { HTTP_BACKEND } from "../config"
 
 // --- Components ---
 
@@ -82,41 +83,41 @@ export default function Signup() {
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (formData.password.length < 6) {
-    toast.error("Password is too short");
-    return;
-  }
+    if (formData.password.length < 6) {
+      toast.error("Password is too short");
+      return;
+    }
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const response = await axios.post(
-      "http://localhost:3000/api/v1/signup",
-      formData,
-      { withCredentials: true }
-    );
+    try {
+      const response = await axios.post(
+        `${HTTP_BACKEND}/api/v1/signup`,
+        formData,
+        { withCredentials: true }
+      );
 
-    // If signup done successfully
-    setIsSuccess(true);
-    toast.success(response.data.message || "Account created successfully!");
+      // If signup done successfully
+      setIsSuccess(true);
+      toast.success(response.data.message || "Account created successfully!");
 
-    // Redirect after success
-    setTimeout(() => router.push("/signin"), 2000);
+      // Redirect after success
+      setTimeout(() => router.push("/signin"), 2000);
 
-  } catch (err) {
-    console.error(err);
+    } catch (err) {
+      console.error(err);
 
-    toast.error(
-      err instanceof AxiosError && err.response?.data?.message
-        ? err.response.data.message
-        : "Something went wrong. Please try again."
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      toast.error(
+        err instanceof AxiosError && err.response?.data?.message
+          ? err.response.data.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (

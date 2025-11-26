@@ -252,7 +252,6 @@ export const getDrawings = async (req: Request, res: Response) => {
     return res.status(200).json({
       drawings
     });
-
   } catch (error) {
     console.error("Get drawings error:", error);
     return res.status(500).json({

@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import Cookies from 'js-cookie'
 import { motion } from "framer-motion"
 import { Loader2, Mail, Lock, ArrowRight, Sparkles } from "lucide-react"
+import { HTTP_BACKEND } from "../config"
 
 interface IUser {
   username: string,
@@ -33,7 +34,7 @@ function SigninContent() {
     e.preventDefault()
     setLoading(true)
     try {
-      const response = await axios.post(`http://localhost:3000/api/v1/signin`, user, {
+      const response = await axios.post(`${HTTP_BACKEND}/api/v1/signin`, user, {
         withCredentials: true
       })
 

@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from "react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
-import { 
-  LogOut, 
-  Menu, 
-  X, 
-  ArrowRight, 
+import {
+  LogOut,
+  Menu,
+  X,
+  ArrowRight,
   PenTool,    // Changed to PenTool for "Draw" context
-  Layers, 
+  Layers,
   Users,      // Changed from Zap for "Collab" context
   Loader2,
   Minus
@@ -16,6 +16,7 @@ import {
 import Cookies from 'js-cookie'
 import { Toaster, toast } from "sonner"
 import Link from "next/link"
+import { HTTP_BACKEND } from "../config"
 
 // --- Components ---
 
@@ -29,8 +30,8 @@ const GridBackground = () => (
 )
 
 const NavItem = ({ href, children, onClick }: { href: string, children: React.ReactNode, onClick?: () => void }) => (
-  <a 
-    href={href} 
+  <a
+    href={href}
     onClick={onClick}
     className="group relative text-sm font-medium text-neutral-400 hover:text-white transition-colors duration-300 cursor-pointer"
   >
@@ -63,7 +64,7 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  
+
   const { scrollY } = useScroll()
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0])
   const heroY = useTransform(scrollY, [0, 300], [0, 50])
@@ -80,11 +81,11 @@ export default function LandingPage() {
       setIsLoggingOut(true)
       // Simulate network
       await new Promise(resolve => setTimeout(resolve, 800))
-      
+
       try {
-        await fetch("http://localhost:3000/api/v1/logout", { 
-            method: "POST", 
-            credentials: "include" 
+        await fetch(`${HTTP_BACKEND}/api/v1/logout`, {
+          method: "POST",
+          credentials: "include"
         })
       } catch (e) { /* ignore in demo */ }
 
@@ -109,13 +110,12 @@ export default function LandingPage() {
       <Toaster position="bottom-right" theme="dark" />
       <GridBackground />
 
-      <nav 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${
-          scrolled ? "bg-black/80 backdrop-blur-md border-b border-white/10 py-4" : "bg-transparent py-8"
-        }`}
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out ${scrolled ? "bg-black/80 backdrop-blur-md border-b border-white/10 py-4" : "bg-transparent py-8"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          
+
           <Link href="/" className="flex items-center gap-3 group z-50">
             <div className="w-8 h-8 bg-white text-black flex items-center justify-center rounded-sm font-bold text-lg group-hover:scale-90 transition-transform duration-300">
               E
@@ -137,7 +137,7 @@ export default function LandingPage() {
             </button>
           </div>
 
-          <button 
+          <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden z-50 text-white p-2 hover:bg-white/10 rounded-full transition-colors"
           >
@@ -155,7 +155,7 @@ export default function LandingPage() {
             className="fixed inset-0 z-40 bg-black flex flex-col items-center justify-center space-y-8 md:hidden"
           >
             {['Dashboard', 'Projects', 'Community'].map((item) => (
-              <a 
+              <a
                 key={item}
                 href={`/${item.toLowerCase()}`}
                 className="text-3xl font-light tracking-wide hover:text-neutral-400 transition-colors"
@@ -163,7 +163,7 @@ export default function LandingPage() {
                 {item}
               </a>
             ))}
-            <button 
+            <button
               onClick={handleLogout}
               className="text-xl text-neutral-500 hover:text-white mt-8 flex items-center gap-2"
             >
@@ -174,7 +174,7 @@ export default function LandingPage() {
       </AnimatePresence>
 
       <main className="relative pt-48 pb-32 px-6">
-        <motion.div 
+        <motion.div
           style={{ opacity: heroOpacity, y: heroY }}
           className="max-w-4xl mx-auto text-center"
         >
@@ -205,7 +205,7 @@ export default function LandingPage() {
             transition={{ duration: 1, delay: 0.3 }}
             className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed"
           >
-            Edunax removes the noise, leaving you with a pure digital canvas. 
+            Edunax removes the noise, leaving you with a pure digital canvas.
             Designed for clarity, built for collaboration.
           </motion.p>
 
@@ -223,7 +223,7 @@ export default function LandingPage() {
                 <div className="absolute inset-0 bg-neutral-200 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
               </button>
             </a>
-            
+
             <a href="/signin">
               <button className="px-8 py-4 bg-transparent border border-white/20 text-white text-sm font-medium tracking-wide uppercase hover:bg-white hover:text-black transition-all duration-300">
                 Sign In

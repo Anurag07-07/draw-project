@@ -20,6 +20,7 @@ import axios from "axios"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Toaster, toast } from "sonner"
+import { HTTP_BACKEND } from "../config"
 
 interface ISlug {
   slug: string
@@ -141,7 +142,7 @@ export default function DashboardPage() {
   const fetchRooms = async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(`http://localhost:3000/api/v1/rooms`, {
+      const response = await axios.get(`${HTTP_BACKEND}/api/v1/rooms`, {
         withCredentials: true
       })
       setRooms(response.data.rooms)
@@ -163,7 +164,7 @@ export default function DashboardPage() {
 
     try {
       setIsCreating(true)
-      await axios.post(`http://localhost:3000/api/v1/create-room`, slug, {
+      await axios.post(`${HTTP_BACKEND}/api/v1/create-room`, slug, {
         withCredentials: true
       })
       toast.success("Room created successfully!")
