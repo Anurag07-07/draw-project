@@ -204,7 +204,8 @@ export const getChat = async (req: Request, res: Response) => {
 export const Logout = (req: Request, res: Response) => {
   res.cookie("token", "", {
     httpOnly: true,
-    sameSite: "lax", // Changed from 'strict' to 'lax' to allow cross-origin cookie deletion
+    sameSite: "none", // Changed from 'strict' to 'lax' to allow cross-origin cookie deletion
+    secure: true,
     path: "/",
     expires: new Date(0), // delete cookie
   });
