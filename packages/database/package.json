@@ -8,7 +8,7 @@
     "./db": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc -b"
+    "build": "prisma generate && tsc -b"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
