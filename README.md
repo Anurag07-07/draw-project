@@ -1,168 +1,119 @@
-# 🎨 ExcilDraw - Collaborative Real-time Drawing Platform
+# 🎨 Draw Project - Collaborative Drawing Platform
 
-A powerful, real-time collaborative drawing application built with **Next.js**, **Express**, **WebSockets**, and **PostgreSQL**. Think Excalidraw meets real-time collaboration with persistent storage.
+<div align="center">
 
+![Draw Project](https://img.shields.io/badge/Draw-Project-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/license-ISC-green?style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-blue?style=for-the-badge&logo=typescript)
 ![Next.js](https://img.shields.io/badge/Next.js-16.0-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?style=for-the-badge&logo=typescript)
-![WebSocket](https://img.shields.io/badge/WebSocket-realtime-green?style=for-the-badge)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791?style=for-the-badge&logo=postgresql)
+
+**A real-time collaborative drawing application built with Next.js, Express, WebSockets, and Prisma**
+
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Getting Started](#-getting-started) • [Architecture](#-architecture) • [Deployment](#-deployment) • [Troubleshooting](#-troubleshooting)
+
+</div>
 
 ---
 
-## 📋 Table of Contents
+## 📖 Table of Contents
 
-- [What is ExcilDraw?](#what-is-excildraw)
-- [Architecture Overview](#architecture-overview)
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Database Schema](#database-schema)
-- [API Routes & Endpoints](#api-routes--endpoints)
-- [WebSocket Events](#websocket-events)
-- [Frontend Routes](#frontend-routes)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Docker Deployment](#docker-deployment)
-- [How It Works](#how-it-works)
-- [Contributing](#contributing)
-
----
-
-## 🎯 What is ExcilDraw?
-
-**ExcilDraw** is a **real-time collaborative drawing platform** where multiple users can:
-
-- 🎨 **Draw together** in real-time on a shared canvas
-- 💬 **Chat** while drawing
-- 🔐 **Authenticate** with secure JWT-based authentication
-- 💾 **Persist drawings** to a PostgreSQL database
-- 🚀 **Create private rooms** for team collaboration
-- 📱 **Responsive design** with modern, premium UI
-- ⚡ **Real-time synchronization** via WebSockets
-
-Perfect for:
-- Remote team brainstorming
-- Online tutoring with visual aids
-- Collaborative design sessions
-- Virtual whiteboarding
-- Creative collaboration
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Getting Started](#-getting-started)
+- [Architecture](#-architecture)
+- [Environment Variables](#-environment-variables)
+- [API Documentation](#-api-documentation)
+- [WebSocket Events](#-websocket-events)
+- [Database Schema](#-database-schema)
+- [Deployment](#-deployment)
+- [Docker Support](#-docker-support)
+- [Scripts](#-scripts)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## 🏗️ Architecture Overview
+## 🌟 Overview
 
-This project uses a **Turborepo monorepo** architecture with three main applications:
+**Draw Project** is a modern, real-time collaborative drawing application similar to Excalidraw. It allows multiple users to draw together on shared canvases, chat in real-time, and manage drawing rooms. The application is built using a **monorepo architecture** powered by Turborepo, featuring separate frontend, HTTP backend, and WebSocket backend services.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        CLIENT (Browser)                      │
-│              Next.js App (Port 3001)                         │
-│        - Landing Page                                        │
-│        - Authentication (Sign In/Sign Up)                    │
-│        - Canvas/Drawing Interface                            │
-│        - Room Management Dashboard                           │
-└────────────┬──────────────────────┬──────────────────────────┘
-             │                      │
-             │ HTTP Requests        │ WebSocket Connection
-             │ (Auth, Rooms, Data)  │ (Real-time sync)
-             │                      │
-     ┌───────▼────────┐    ┌────────▼────────┐
-     │  HTTP Backend  │    │  WS Backend     │
-     │  Express.js    │    │  WebSocket      │
-     │  Port 3000     │    │  Port 8080      │
-     │                │    │                 │
-     │  - Auth        │    │  - Join Rooms   │
-     │  - Rooms       │    │  - Live Drawing │
-     │  - User Mgmt   │    │  - Live Chat    │
-     │  - JWT Tokens  │    │  - Broadcasting │
-     └────────┬───────┘    └────────┬────────┘
-              │                     │
-              │                     │
-              └──────────┬──────────┘
-                         │
-                  ┌──────▼──────┐
-                  │ PostgreSQL  │
-                  │  Database   │
-                  │   (Prisma)  │
-                  │             │
-                  │  - Users    │
-                  │  - Rooms    │
-                  │  - Chats    │
-                  │  - Drawings │
-                  └─────────────┘
-```
+### Key Highlights
+
+- 🎨 **Real-time Collaborative Drawing** - Multiple users can draw simultaneously on the same canvas
+- 💬 **Live Chat** - Built-in chat system for each drawing room
+- 🔐 **Authentication & Authorization** - Secure JWT-based authentication
+- 🎯 **Multiple Drawing Tools** - Rectangle, Circle, Line, Pencil (Freehand), Text, Eraser
+- 🎨 **Color & Style Customization** - Stroke color, fill color, stroke width, and opacity controls
+- 📱 **Touch Support** - Full support for mobile and tablet devices
+- 🌙 **Dark/Light Mode** - Theme support with next-themes
+- 🚀 **High Performance** - Built with Next.js 16 and optimized WebSocket connections
+- 🐳 **Docker Ready** - Complete Docker and Docker Compose setup
+- 📦 **Monorepo Structure** - Organized codebase using Turborepo and pnpm workspaces
 
 ---
 
-## ✨ Key Features
+## ✨ Features
 
-### 🎨 Drawing Tools
-- **Rectangle Tool** - Draw rectangular shapes
-- **Circle Tool** - Draw circular shapes  
-- **Line Tool** - Draw straight lines
-- **Pencil/Freehand Tool** - Draw freely
-- **Text Tool** - Add text annotations
-- **Color Picker** - Customize stroke and fill colors
-- **Stroke Width** - Adjustable brush sizes
-- **Opacity Control** - Transparent elements
-- **Clear Canvas** - Remove all drawings
-- **Download Canvas** - Export as PNG
+### Drawing Tools
+- **Rectangle** - Draw rectangular shapes with customizable fill and stroke
+- **Circle** - Create circles with adjustable radius
+- **Line** - Draw straight lines between two points
+- **Pencil** - Freehand drawing with smooth path rendering
+- **Text** - Add text annotations to the canvas
+- **Eraser** - Remove unwanted drawing elements with click detection
 
-### 🤝 Real-time Collaboration
-- **Multi-user Support** - Multiple users can draw simultaneously
-- **Live Synchronization** - See others' drawings in real-time
-- **Real-time Chat** - Communicate while drawing
-- **Room-based Isolation** - Each room has its own canvas
-- **Persistent State** - Drawings saved to database automatically
+### Collaboration
+- **Real-time Synchronization** - See other users' drawings instantly
+- **Multi-user Rooms** - Create and join collaborative drawing rooms
+- **Live Chat** - Communicate with collaborators in real-time
+- **User Presence** - See who's currently in the room
 
-### 🔐 Authentication & Security
-- **JWT Authentication** - Secure token-based auth
-- **HTTP-only Cookies** - Secure session management
-- **Bcrypt Password Hashing** - Secure password storage
-- **Protected Routes** - Middleware-based route protection
-- **WebSocket Token Verification** - Secure WS connections
+### Customization
+- **Color Picker** - Choose from preset colors or custom colors
+- **Stroke Width** - Adjustable line thickness
+- **Opacity Control** - Set transparency for drawing elements
+- **Fill/No Fill** - Toggle fill for shapes
 
-### 🎭 Premium UI/UX
-- **Modern Design** - Glassmorphism, gradients, animations
-- **Framer Motion** - Smooth animations and transitions
-- **Responsive Layout** - Works on all screen sizes
-- **Dark Theme** - Eye-friendly dark interface
-- **Toast Notifications** - User feedback with Sonner
-- **Loading States** - Elegant loading indicators
+### User Management
+- **User Authentication** - Sign up and sign in with username/password
+- **Room Administration** - Create and manage drawing rooms
+- **Persistent Storage** - All drawings are saved to the database
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
 ### Frontend
-- **Next.js 16** - React framework with App Router
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **Framer Motion** - Animation library
-- **Tailwind CSS 4** - Utility-first CSS
-- **Lucide React** - Icon library
-- **Axios** - HTTP client
-- **Sonner** - Toast notifications
-- **js-cookie** - Cookie management
+- **[Next.js 16](https://nextjs.org/)** - React framework with App Router
+- **[React 19](https://react.dev/)** - UI library
+- **[TypeScript 5.9](https://www.typescriptlang.org/)** - Type-safe JavaScript
+- **[Tailwind CSS 4](https://tailwindcss.com/)** - Utility-first CSS framework
+- **[Framer Motion](https://www.framer.com/motion/)** - Animation library
+- **[Lucide React](https://lucide.dev/)** - Icon library
+- **[Axios](https://axios-http.com/)** - HTTP client
+- **[Sonner](https://sonner.emilkowal.ski/)** - Toast notifications
+- **[next-themes](https://github.com/pacocoursey/next-themes)** - Theme management
 
 ### Backend
-- **Express.js** - HTTP server
-- **WebSocket (ws)** - Real-time communication
-- **Prisma** - ORM for database
-- **PostgreSQL** - Relational database
-- **JWT** - Authentication tokens
-- **Bcrypt** - Password hashing
-- **CORS** - Cross-origin resource sharing
-- **Cookie Parser** - Cookie handling
+- **[Express.js 5](https://expressjs.com/)** - HTTP server framework
+- **[WebSocket (ws)](https://github.com/websockets/ws)** - Real-time bidirectional communication
+- **[Prisma](https://www.prisma.io/)** - Database ORM
+- **[PostgreSQL](https://www.postgresql.org/)** - Relational database
+- **[JWT (jsonwebtoken)](https://jwt.io/)** - Authentication tokens
+- **[bcrypt](https://github.com/kelektiv/node.bcrypt.js)** - Password hashing
+- **[CORS](https://expressjs.com/en/resources/middleware/cors.html)** - Cross-origin resource sharing
 
-### DevOps & Tools
-- **Turborepo** - Monorepo management
-- **pnpm** - Package manager
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
+### DevOps & Tooling
+- **[Turborepo](https://turbo.build/repo)** - Monorepo build system
+- **[pnpm](https://pnpm.io/)** - Fast, disk-efficient package manager
+- **[Docker](https://www.docker.com/)** - Containerization
+- **[Docker Compose](https://docs.docker.com/compose/)** - Multi-container orchestration
+- **[ESLint](https://eslint.org/)** - Code linting
+- **[Prettier](https://prettier.io/)** - Code formatting
 
 ---
 
@@ -170,685 +121,814 @@ This project uses a **Turborepo monorepo** architecture with three main applicat
 
 ```
 draw-project/
-├── apps/
-│   ├── docs/                        # Next.js Frontend Application
-│   │   ├── app/
-│   │   │   ├── _components/
-│   │   │   │   └── Main.tsx         # Landing page component
-│   │   │   ├── canvas/[slug]/
-│   │   │   │   └── page.tsx         # Canvas/Drawing page
-│   │   │   ├── dashboard/
-│   │   │   │   └── page.tsx         # User dashboard
-│   │   │   ├── rooms/
-│   │   │   │   └── page.tsx         # Room management
-│   │   │   ├── signin/
-│   │   │   │   └── page.tsx         # Sign in page
-│   │   │   ├── signup/
-│   │   │   │   └── page.tsx         # Sign up page
-│   │   │   ├── layout.tsx           # Root layout
-│   │   │   ├── page.tsx             # Home page
-│   │   │   └── globals.css          # Global styles
+├── apps/                           # Application packages
+│   ├── docs/                       # Next.js Frontend
+│   │   ├── app/                    # Next.js App Router
+│   │   │   ├── _components/        # Shared components
+│   │   │   ├── canvas/[slug]/      # Canvas page (collaborative drawing)
+│   │   │   ├── dashboard/          # User dashboard
+│   │   │   ├── rooms/              # Rooms listing page
+│   │   │   ├── signin/             # Sign in page
+│   │   │   ├── signup/             # Sign up page
+│   │   │   ├── api.ts              # Axios instance with auth
+│   │   │   ├── config.ts           # Backend URLs configuration
+│   │   │   ├── globals.css         # Global styles
+│   │   │   └── layout.tsx          # Root layout
+│   │   ├── public/                 # Static assets
+│   │   ├── next.config.ts          # Next.js configuration
+│   │   ├── tailwind.config.ts      # Tailwind configuration
 │   │   └── package.json
 │   │
-│   ├── http-backend/                # Express HTTP API Server
+│   ├── http-backend/               # HTTP API Server
 │   │   ├── src/
-│   │   │   ├── controllers/
-│   │   │   │   └── user.controller.ts  # Request handlers
-│   │   │   ├── middleware/
-│   │   │   │   └── auth.ts          # Auth middleware
-│   │   │   ├── routes/
-│   │   │   │   └── user.route.ts    # API routes
-│   │   │   ├── utils/
-│   │   │   └── index.ts             # Server entry point
+│   │   │   ├── controllers/        # Route controllers
+│   │   │   ├── middleware/         # Express middleware (auth)
+│   │   │   ├── routes/             # API routes
+│   │   │   ├── utils/              # Utility functions
+│   │   │   └── index.ts            # Express server entry
+│   │   ├── dist/                   # Compiled JavaScript (build output)
+│   │   ├── tsconfig.json
 │   │   └── package.json
 │   │
-│   └── ws-backend/                  # WebSocket Server
+│   └── ws-backend/                 # WebSocket Server
 │       ├── src/
-│       │   └── index.ts             # WebSocket logic
+│       │   └── index.ts            # WebSocket server entry
+│       ├── dist/                   # Compiled JavaScript (build output)
+│       ├── tsconfig.json
 │       └── package.json
 │
-├── packages/
-│   ├── common/                      # Shared utilities
-│   ├── database/                    # Prisma schema & client
+├── packages/                       # Shared packages
+│   ├── common/                     # Common utilities
+│   ├── database/                   # Prisma schema & client
 │   │   ├── prisma/
-│   │   │   └── schema.prisma        # Database schema
-│   │   └── src/
-│   │       └── index.ts             # Prisma client export
-│   ├── eslint-config/               # Shared ESLint config
-│   ├── typescript-config/           # Shared TS config
-│   └── ui/                          # Shared UI components
+│   │   │   └── schema.prisma       # Database schema
+│   │   ├── dist/                   # Generated Prisma client
+│   │   └── package.json
+│   ├── eslint-config/              # Shared ESLint configs
+│   ├── typescript-config/          # Shared TypeScript configs
+│   └── ui/                         # Shared UI components
 │
-├── .env                             # Environment variables
-├── docker-compose.yml               # Docker orchestration
-├── Dockerfile                       # Multi-stage Dockerfile
-├── package.json                     # Root package.json
-├── pnpm-workspace.yaml              # pnpm workspace config
-├── turbo.json                       # Turborepo config
-└── README.md                        # This file
+├── .dockerignore                   # Docker ignore rules
+├── .env                            # Environment variables
+├── .gitignore
+├── docker-compose.yml              # Docker Compose configuration
+├── Dockerfile                      # Multi-stage Dockerfile
+├── package.json                    # Root package.json
+├── pnpm-lock.yaml                  # pnpm lock file
+├── pnpm-workspace.yaml             # pnpm workspace config
+├── turbo.json                      # Turborepo configuration
+├── README.md                       # This file
+├── DOCKER.md                       # Docker setup guide
+├── CORS_FIX_GUIDE.md               # CORS troubleshooting
+├── DOCKER_FIXES.md                 # Docker troubleshooting
+└── TROUBLESHOOTING_DEPLOYMENT.md   # Deployment troubleshooting
 ```
 
 ---
 
-## 🗄️ Database Schema
+## 📋 Prerequisites
 
-### User Table
-```prisma
-model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  password  String                      // Bcrypt hashed
-  photo     String?
-  rooms     Room[]                      // Rooms created by user
-  chats     Chat[]                      // User's chat messages
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-```
+Before you begin, ensure you have the following installed:
 
-### Room Table
-```prisma
-model Room {
-  id              Int              @id @default(autoincrement())
-  slug            String           @unique      // URL-friendly identifier
-  adminId         String                        // Room creator
-  admin           User             @relation(fields: [adminId], references: [id])
-  chats           Chat[]                        // Room's chat messages
-  drawingElements DrawingElement[]              // Room's drawings
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-}
-```
+- **Node.js** >= 18.0.0 ([Download](https://nodejs.org/))
+- **pnpm** >= 9.0.0 ([Install](https://pnpm.io/installation))
+- **PostgreSQL** >= 14.0 ([Download](https://www.postgresql.org/download/))
+- **Git** ([Download](https://git-scm.com/downloads))
 
-### Chat Table
-```prisma
-model Chat {
-  id        Int      @id @default(autoincrement())
-  message   String
-  userId    String
-  roomId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  room      Room     @relation(fields: [roomId], references: [id])
-}
-```
-
-### DrawingElement Table
-```prisma
-model DrawingElement {
-  id          String   @id @default(uuid())
-  roomId      Int
-  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  userId      String
-  type        String   // "rectangle", "circle", "line", "pencil", "text"
-  x           Float    // X coordinate
-  y           Float    // Y coordinate
-  width       Float?   // For rectangle/text
-  height      Float?   // For rectangle/text
-  radius      Float?   // For circle
-  path        String?  // JSON stringified array for pencil tool
-  text        String?  // For text elements
-  strokeColor String   @default("#000000")
-  fillColor   String?
-  strokeWidth Float    @default(2)
-  opacity     Float    @default(1)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-```
-
-**Cascade Delete**: When a room is deleted, all associated drawings are automatically deleted.
-
----
-
-## 🔌 API Routes & Endpoints
-
-### Base URL
-```
-http://localhost:3000/api/v1
-```
-
-### Authentication Routes
-
-#### 1. **Sign Up**
-```http
-POST /api/v1/signup
-Content-Type: application/json
-
-{
-  "username": "john_doe",
-  "password": "securePassword123"
-}
-
-Response (200):
-{
-  "message": "User Created Successfully",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-#### 2. **Sign In**
-```http
-POST /api/v1/signin
-Content-Type: application/json
-
-{
-  "username": "john_doe",
-  "password": "securePassword123"
-}
-
-Response (200):
-{
-  "message": "User SignIn Successfully",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-**Note**: Token is also set as HTTP-only cookie named `token`.
-
-#### 3. **Logout** 🔒
-```http
-POST /api/v1/logout
-Cookie: token=<jwt_token>
-
-Response (200):
-{
-  "message": "Logout Successfully"
-}
-```
-
-### Room Management Routes (All Protected 🔒)
-
-#### 4. **Create Room** 🔒
-```http
-POST /api/v1/create-room
-Cookie: token=<jwt_token>
-Content-Type: application/json
-
-{
-  "slug": "my-awesome-room"
-}
-
-Response (200):
-{
-  "message": "Room Created Successfully",
-  "room": {
-    "id": 1,
-    "slug": "my-awesome-room",
-    "adminId": "user-uuid-here",
-    "createdAt": "2025-11-26T07:42:09.000Z",
-    "updatedAt": "2025-11-26T07:42:09.000Z"
-  }
-}
-```
-
-#### 5. **Get All Rooms** 🔒
-```http
-GET /api/v1/rooms
-Cookie: token=<jwt_token>
-
-Response (200):
-{
-  "rooms": [
-    {
-      "id": 1,
-      "slug": "my-awesome-room",
-      "adminId": "user-uuid",
-      "createdAt": "2025-11-26T07:42:09.000Z"
-    }
-  ]
-}
-```
-
-#### 6. **Get Room by Slug** 🔒
-```http
-GET /api/v1/room/:slug
-Cookie: token=<jwt_token>
-
-Response (200):
-{
-  "room": {
-    "id": 1,
-    "slug": "my-awesome-room",
-    "adminId": "user-uuid",
-    "createdAt": "2025-11-26T07:42:09.000Z"
-  }
-}
-```
-
-### Drawing Routes (Protected 🔒)
-
-#### 7. **Get Room Drawings** 🔒
-```http
-GET /api/v1/rooms/:id/drawings
-Cookie: token=<jwt_token>
-
-Response (200):
-{
-  "drawings": [
-    {
-      "id": "drawing-uuid",
-      "type": "rectangle",
-      "x": 100,
-      "y": 150,
-      "width": 200,
-      "height": 100,
-      "strokeColor": "#000000",
-      "fillColor": "#ff0000",
-      "strokeWidth": 2,
-      "opacity": 1
-    }
-  ]
-}
-```
-
-### Chat Routes (Protected 🔒)
-
-#### 8. **Get Room Chats** 🔒
-```http
-GET /api/v1/chats/:id
-Cookie: token=<jwt_token>
-
-Response (200):
-{
-  "chats": [
-    {
-      "id": 1,
-      "message": "Hello everyone!",
-      "userId": "user-uuid",
-      "roomId": 1,
-      "user": {
-        "username": "john_doe"
-      }
-    }
-  ]
-}
-```
-
-### Token Route (Protected 🔒)
-
-#### 9. **Get Token** 🔒
-```http
-GET /api/v1/token
-Cookie: token=<jwt_token>
-
-Response (200):
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-**Purpose**: Used to retrieve JWT token for WebSocket authentication.
-
----
-
-## 🔄 WebSocket Events
-
-### WebSocket URL
-```
-ws://localhost:8080?token=<jwt_token>
-```
-
-### Client → Server Events
-
-#### 1. **Join Room**
-```javascript
-ws.send(JSON.stringify({
-  type: "join_room",
-  roomId: "1"
-}))
-```
-
-#### 2. **Leave Room**
-```javascript
-ws.send(JSON.stringify({
-  type: "leave_room",
-  roomId: "1"
-}))
-```
-
-#### 3. **Send Chat Message**
-```javascript
-ws.send(JSON.stringify({
-  type: "chat",
-  roomId: "1",
-  message: "Hello everyone!"
-}))
-```
-
-#### 4. **Draw Element**
-```javascript
-ws.send(JSON.stringify({
-  type: "draw",
-  roomId: "1",
-  element: {
-    id: "element-uuid",
-    type: "rectangle",
-    x: 100,
-    y: 150,
-    width: 200,
-    height: 100,
-    strokeColor: "#000000",
-    fillColor: "#ff0000",
-    strokeWidth: 2,
-    opacity: 1
-  }
-}))
-```
-
-#### 5. **Update Drawing Element**
-```javascript
-ws.send(JSON.stringify({
-  type: "update_draw",
-  roomId: "1",
-  elementId: "element-uuid",
-  updates: {
-    x: 120,
-    y: 170,
-    fillColor: "#00ff00"
-  }
-}))
-```
-
-#### 6. **Delete Drawing Element**
-```javascript
-ws.send(JSON.stringify({
-  type: "delete_draw",
-  roomId: "1",
-  elementId: "element-uuid"
-}))
-```
-
-#### 7. **Clear Canvas**
-```javascript
-ws.send(JSON.stringify({
-  type: "clear_canvas",
-  roomId: "1"
-}))
-```
-
-### Server → Client Events
-
-All events sent from the server follow the same structure as above. The WebSocket server **broadcasts** events to all users in the same room.
-
----
-
-## 🌐 Frontend Routes
-
-### Public Routes
-
-| Route | Page | Description |
-|-------|------|-------------|
-| `/` | Landing Page | Homepage with features, CTA, and navigation |
-| `/signin` | Sign In | User authentication page |
-| `/signup` | Sign Up | New user registration page |
-
-### Protected Routes (Require Authentication)
-
-| Route | Page | Description |
-|-------|------|-------------|
-| `/dashboard` | Dashboard | User's personal dashboard |
-| `/rooms` | Rooms | List of user's rooms, create new rooms |
-| `/canvas/[slug]` | Canvas | Drawing canvas for specific room |
-
-### Route Flow
-
-```
-User Journey:
-1. /                        → Landing page
-2. /signup or /signin       → Authentication
-3. /dashboard or /rooms     → Room selection/creation
-4. /canvas/[room-slug]      → Collaborative drawing
-```
+**Optional (for Docker deployment):**
+- **Docker** ([Install](https://docs.docker.com/get-docker/))
+- **Docker Compose** ([Install](https://docs.docker.com/compose/install/))
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 1. Clone the Repository
 
-- **Node.js** >= 18
-- **pnpm** 9.0.0
-- **PostgreSQL** database
-- **Git**
-
-### Installation
-
-1. **Clone the repository**
 ```bash
 git clone https://github.com/Anurag07-07/draw-project.git
 cd draw-project
 ```
 
-2. **Install dependencies**
+### 2. Install Dependencies
+
 ```bash
 pnpm install
 ```
 
-3. **Set up environment variables**
+This will install all dependencies for all workspaces in the monorepo.
+
+### 3. Set Up Environment Variables
 
 Create a `.env` file in the root directory:
 
-```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/excildraw?schema=public"
-
-# JWT Secret (Use a strong random string)
+```bash
+# .env
+DATABASE_URL="postgresql://username:password@localhost:5432/draw_project?schema=public"
 JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
-
-# Frontend URLs (for CORS)
-NEXT_PUBLIC_HTTP_BACKEND_URL="http://localhost:3000"
-NEXT_PUBLIC_WS_BACKEND_URL="ws://localhost:8080"
 ```
 
-4. **Set up the database**
+**Frontend Environment Variables** (optional, for production deployment):
+
+Create `apps/docs/.env.local`:
 
 ```bash
-# Navigate to database package
+NEXT_PUBLIC_HTTP_BACKEND=http://localhost:3000
+NEXT_PUBLIC_WS_BACKEND=ws://localhost:8080
+```
+
+### 4. Set Up the Database
+
+```bash
+# Navigate to the database package
 cd packages/database
 
-# Generate Prisma client
+# Generate Prisma Client
 pnpm prisma generate
 
-# Run migrations
+# Run database migrations
 pnpm prisma migrate dev --name init
 
 # (Optional) Seed the database
 pnpm prisma db seed
 ```
 
-5. **Start development servers**
+### 5. Build All Packages
 
 From the root directory:
 
 ```bash
-# Start all services simultaneously
+pnpm build
+```
+
+This will build all packages in the correct order using Turborepo.
+
+### 6. Start Development Servers
+
+Open **three separate terminal windows**:
+
+**Terminal 1 - Frontend** (runs on port 3001):
+```bash
+cd apps/docs
 pnpm dev
 ```
 
-This will start:
-- **Frontend** at http://localhost:3001
-- **HTTP Backend** at http://localhost:3000
-- **WebSocket Backend** at ws://localhost:8080
+**Terminal 2 - HTTP Backend** (runs on port 3000):
+```bash
+cd apps/http-backend
+pnpm dev
+```
 
-### Individual Service Commands
+**Terminal 3 - WebSocket Backend** (runs on port 8080):
+```bash
+cd apps/ws-backend
+pnpm dev
+```
+
+**OR** use Turborepo to run all dev servers at once:
 
 ```bash
-# Start only frontend
-turbo dev --filter=docs
+pnpm dev
+```
 
-# Start only HTTP backend
-turbo dev --filter=http-backend
+### 7. Access the Application
 
-# Start only WebSocket backend
-turbo dev --filter=ws-backend
+Open your browser and navigate to:
+
+```
+http://localhost:3001
+```
+
+---
+
+## 🏗 Architecture
+
+The application follows a **microservices architecture** with three main components:
+
+### 1. Frontend (Next.js)
+- **Port**: 3001
+- **Responsibility**: User interface, routing, client-side state management
+- **Key Features**:
+  - Server-side rendering (SSR) with Next.js App Router
+  - Real-time canvas updates via WebSocket
+  - JWT token management in localStorage and cookies
+  - Responsive design with Tailwind CSS
+
+### 2. HTTP Backend (Express)
+- **Port**: 3000
+- **Responsibility**: RESTful API, authentication, room management
+- **Key Endpoints**:
+  - `POST /api/auth/signup` - User registration
+  - `POST /api/auth/signin` - User login
+  - `GET /api/rooms` - Get all rooms (authenticated)
+  - `POST /api/rooms` - Create a new room (authenticated)
+  - `GET /api/rooms/:slug` - Get room details
+
+### 3. WebSocket Backend (ws)
+- **Port**: 8080
+- **Responsibility**: Real-time communication, drawing synchronization, chat
+- **Key Events**:
+  - `join-room` - User joins a drawing room
+  - `draw` - User draws on canvas (broadcast to others)
+  - `clear-canvas` - Clear all drawings
+  - `chat-message` - Send/receive chat messages
+  - `user-joined` / `user-left` - User presence updates
+
+### Data Flow
+
+```
+┌─────────────┐         HTTP/REST          ┌─────────────────┐
+│             │ ◄─────────────────────────► │                 │
+│   Next.js   │                             │  HTTP Backend   │
+│  Frontend   │                             │   (Express)     │
+│             │         WebSocket           │                 │
+│   (3001)    │ ◄───────────────────┐       │     (3000)      │
+└─────────────┘                     │       └─────────────────┘
+                                    │                │
+                                    │                │
+                                    │                │ Prisma
+                                    ▼                ▼
+                          ┌─────────────────┐  ┌──────────────┐
+                          │   WebSocket     │  │  PostgreSQL  │
+                          │    Backend      │  │   Database   │
+                          │      (ws)       │  │              │
+                          │     (8080)      │  │              │
+                          └─────────────────┘  └──────────────┘
+                                    │ Prisma
+                                    ▼
+                          ┌──────────────────┐
+                          │   PostgreSQL     │
+                          │    Database      │
+                          └──────────────────┘
 ```
 
 ---
 
 ## 🔐 Environment Variables
 
-### Required Variables
+### Root `.env`
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/db` |
-| `JWT_SECRET` | Secret key for JWT signing | `your-secret-key-min-32-chars` |
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | ✅ | - |
+| `JWT_SECRET` | Secret key for JWT signing | ✅ | - |
 
-### Optional Variables
+### Frontend `.env.local` (apps/docs/)
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NEXT_PUBLIC_HTTP_BACKEND_URL` | HTTP API URL | `http://localhost:3000` |
-| `NEXT_PUBLIC_WS_BACKEND_URL` | WebSocket URL | `ws://localhost:8080` |
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `NEXT_PUBLIC_HTTP_BACKEND` | HTTP backend URL | ❌ | `http://localhost:3000` |
+| `NEXT_PUBLIC_WS_BACKEND` | WebSocket backend URL | ❌ | `ws://localhost:8080` |
 
 ---
 
-## 🐳 Docker Deployment
+## 📡 API Documentation
 
-See [DOCKER.md](./DOCKER.md) for detailed Docker deployment instructions.
+### Authentication
 
-### Quick Docker Start
+#### Sign Up
+```http
+POST /api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "johndoe",
+  "password": "securepassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "uuid-here",
+    "username": "johndoe"
+  }
+}
+```
+
+#### Sign In
+```http
+POST /api/auth/signin
+Content-Type: application/json
+
+{
+  "username": "johndoe",
+  "password": "securepassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "uuid-here",
+    "username": "johndoe"
+  }
+}
+```
+
+### Rooms
+
+#### Get All Rooms
+```http
+GET /api/rooms
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "rooms": [
+    {
+      "id": 1,
+      "slug": "my-awesome-room",
+      "adminId": "uuid-here",
+      "createdAt": "2025-11-27T12:00:00.000Z"
+    }
+  ]
+}
+```
+
+#### Create Room
+```http
+POST /api/rooms
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "slug": "my-new-room"
+}
+```
+
+**Response:**
+```json
+{
+  "room": {
+    "id": 2,
+    "slug": "my-new-room",
+    "adminId": "uuid-here",
+    "createdAt": "2025-11-27T12:00:00.000Z"
+  }
+}
+```
+
+#### Get Room by Slug
+```http
+GET /api/rooms/:slug
+```
+
+**Response:**
+```json
+{
+  "room": {
+    "id": 1,
+    "slug": "my-awesome-room",
+    "adminId": "uuid-here",
+    "drawingElements": [...],
+    "chats": [...]
+  }
+}
+```
+
+---
+
+## 🔌 WebSocket Events
+
+### Client → Server
+
+#### Join Room
+```javascript
+ws.send(JSON.stringify({
+  type: 'join-room',
+  roomId: 'room-slug',
+  token: 'jwt-token'
+}));
+```
+
+#### Draw Element
+```javascript
+ws.send(JSON.stringify({
+  type: 'draw',
+  roomId: 'room-slug',
+  element: {
+    id: 'element-uuid',
+    type: 'rectangle', // 'rectangle', 'circle', 'line', 'pencil', 'text'
+    x: 100,
+    y: 100,
+    width: 200,
+    height: 150,
+    strokeColor: '#000000',
+    fillColor: '#FF0000',
+    strokeWidth: 2,
+    opacity: 1
+  }
+}));
+```
+
+#### Delete Element (Eraser)
+```javascript
+ws.send(JSON.stringify({
+  type: 'delete-element',
+  roomId: 'room-slug',
+  elementId: 'element-uuid'
+}));
+```
+
+#### Send Chat Message
+```javascript
+ws.send(JSON.stringify({
+  type: 'chat-message',
+  roomId: 'room-slug',
+  message: 'Hello everyone!'
+}));
+```
+
+### Server → Client
+
+#### Initial State
+```javascript
+{
+  type: 'initial-state',
+  elements: [...],
+  chats: [...],
+  users: [...]
+}
+```
+
+#### New Drawing
+```javascript
+{
+  type: 'new-drawing',
+  element: {...}
+}
+```
+
+#### Element Deleted
+```javascript
+{
+  type: 'element-deleted',
+  elementId: 'element-uuid'
+}
+```
+
+#### New Chat Message
+```javascript
+{
+  type: 'new-chat',
+  chat: {
+    id: 123,
+    message: 'Hello!',
+    userId: 'user-uuid',
+    username: 'johndoe'
+  }
+}
+```
+
+#### User Joined
+```javascript
+{
+  type: 'user-joined',
+  userId: 'user-uuid',
+  username: 'johndoe'
+}
+```
+
+#### User Left
+```javascript
+{
+  type: 'user-left',
+  userId: 'user-uuid'
+}
+```
+
+---
+
+## 🗄 Database Schema
+
+### User
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | String (UUID) | Primary key |
+| `username` | String | Unique username |
+| `password` | String | Hashed password (bcrypt) |
+| `photo` | String? | Optional profile photo URL |
+| `createdAt` | DateTime | Account creation timestamp |
+| `updatedAt` | DateTime | Last update timestamp |
+
+### Room
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | Int | Primary key (auto-increment) |
+| `slug` | String | Unique room identifier |
+| `adminId` | String | Foreign key to User |
+| `createdAt` | DateTime | Room creation timestamp |
+| `updatedAt` | DateTime | Last update timestamp |
+
+### DrawingElement
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | String (UUID) | Primary key |
+| `roomId` | Int | Foreign key to Room |
+| `userId` | String | User who created the element |
+| `type` | String | Element type (rectangle, circle, line, pencil, text) |
+| `x` | Float | X coordinate |
+| `y` | Float | Y coordinate |
+| `width` | Float? | Width (for rectangles) |
+| `height` | Float? | Height (for rectangles) |
+| `radius` | Float? | Radius (for circles) |
+| `path` | String? | JSON path data (for pencil) |
+| `text` | String? | Text content (for text) |
+| `strokeColor` | String | Stroke color (hex) |
+| `fillColor` | String? | Fill color (hex) |
+| `strokeWidth` | Float | Stroke width (default: 2) |
+| `opacity` | Float | Opacity (default: 1) |
+| `createdAt` | DateTime | Creation timestamp |
+| `updatedAt` | DateTime | Last update timestamp |
+
+### Chat
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | Int | Primary key (auto-increment) |
+| `message` | String | Chat message content |
+| `userId` | String | Foreign key to User |
+| `roomId` | Int | Foreign key to Room |
+
+---
+
+## 🚢 Deployment
+
+### Environment Setup
+
+For production deployment, you need to:
+
+1. **Set up a PostgreSQL database** (e.g., on Railway, Neon, Supabase, or AWS RDS)
+2. **Deploy the HTTP Backend** (e.g., on Railway, Render, or Fly.io)
+3. **Deploy the WebSocket Backend** (e.g., on Railway, Render, or Fly.io)
+4. **Deploy the Frontend** (e.g., on Vercel, Netlify, or Railway)
+
+### Deployment Checklist
+
+- [ ] Set `DATABASE_URL` environment variable
+- [ ] Set `JWT_SECRET` environment variable (use a strong random string)
+- [ ] Set `NEXT_PUBLIC_HTTP_BACKEND` to your HTTP backend URL
+- [ ] Set `NEXT_PUBLIC_WS_BACKEND` to your WebSocket backend URL
+- [ ] Run Prisma migrations on production database
+- [ ] Configure CORS origins in `apps/http-backend/src/index.ts`
+- [ ] Enable HTTPS for production (especially important for WebSocket)
+
+### Build Commands
+
+**HTTP Backend:**
+```bash
+cd apps/http-backend && npm install && npm run build && npm run start
+```
+
+**WebSocket Backend:**
+```bash
+cd apps/ws-backend && npm install && npm run build && npm run start
+```
+
+**Frontend:**
+```bash
+cd apps/docs && npm install && npm run build && npm run start
+```
+
+### Example Railway Deployment
+
+1. **Create three services** in Railway:
+   - `draw-http-backend`
+   - `draw-ws-backend`
+   - `draw-frontend`
+
+2. **HTTP Backend Service:**
+   - Build Command: `cd apps/http-backend && pnpm install && pnpm run build`
+   - Start Command: `cd apps/http-backend && pnpm run start`
+   - Environment Variables: `DATABASE_URL`, `JWT_SECRET`, `PORT`
+
+3. **WebSocket Backend Service:**
+   - Build Command: `cd apps/ws-backend && pnpm install && pnpm run build`
+   - Start Command: `cd apps/ws-backend && pnpm run start`
+   - Environment Variables: `DATABASE_URL`, `JWT_SECRET`, `PORT`
+
+4. **Frontend Service:**
+   - Build Command: `cd apps/docs && pnpm install && pnpm run build`
+   - Start Command: `cd apps/docs && pnpm run start`
+   - Environment Variables: `NEXT_PUBLIC_HTTP_BACKEND`, `NEXT_PUBLIC_WS_BACKEND`
+
+---
+
+## 🐳 Docker Support
+
+The project includes full Docker and Docker Compose support for easy deployment.
+
+### Using Docker Compose (Recommended)
 
 ```bash
-# Build and run all services
-docker-compose up --build
-
-# Run in detached mode
+# Start all services
 docker-compose up -d
+
+# View logs
+docker-compose logs -f
 
 # Stop all services
 docker-compose down
 ```
 
-Services will be available at:
-- Frontend: http://localhost:3001
-- HTTP API: http://localhost:3000
-- WebSocket: ws://localhost:8080
+This will start:
+- Frontend on port **3001**
+- HTTP Backend on port **3000**
+- WebSocket Backend on port **8080**
+
+### Build Individual Docker Images
+
+```bash
+# Frontend
+docker build --target frontend -t draw-frontend .
+
+# HTTP Backend
+docker build --target http-backend -t draw-http-backend .
+
+# WebSocket Backend
+docker build --target ws-backend -t draw-ws-backend .
+```
+
+### Docker Environment Variables
+
+Create a `.env` file for Docker Compose:
+
+```bash
+DATABASE_URL=postgresql://user:password@db:5432/draw_project
+JWT_SECRET=your-secret-key
+NEXT_PUBLIC_HTTP_BACKEND_URL=http://localhost:3000
+NEXT_PUBLIC_WS_BACKEND_URL=ws://localhost:8080
+```
+
+For more details, see [DOCKER.md](DOCKER.md).
 
 ---
 
-## 🔍 How It Works
+## 📜 Scripts
 
-### 1. **Authentication Flow**
+### Root Scripts
 
-```
-User Sign Up/Sign In
-       ↓
-Frontend sends credentials to /api/v1/signup or /signin
-       ↓
-HTTP Backend validates and creates JWT token
-       ↓
-Token sent back as response AND set as HTTP-only cookie
-       ↓
-Frontend stores user state
-       ↓
-Protected routes check for valid token in cookie
-```
+```bash
+# Install all dependencies
+pnpm install
 
-### 2. **Room Creation & Access**
+# Run all dev servers
+pnpm dev
 
-```
-User clicks "Create Room" in Dashboard
-       ↓
-Frontend sends POST /api/v1/create-room with slug
-       ↓
-HTTP Backend creates room in database
-       ↓
-User redirected to /canvas/[slug]
-       ↓
-Canvas page loads room data via GET /api/v1/room/:slug
-       ↓
-WebSocket connection established with JWT token
+# Build all packages
+pnpm build
+
+# Lint all packages
+pnpm lint
+
+# Type-check all packages
+pnpm check-types
+
+# Format code
+pnpm format
 ```
 
-### 3. **Real-time Drawing Synchronization**
+### Frontend Scripts (apps/docs)
 
-```
-User A draws a rectangle on canvas
-       ↓
-Frontend creates DrawingElement object
-       ↓
-Send via WebSocket: { type: "draw", element: {...} }
-       ↓
-WebSocket server receives message
-       ↓
-Server saves element to database (DrawingElement table)
-       ↓
-Server broadcasts to all users in the same room
-       ↓
-User B receives the element via WebSocket
-       ↓
-User B's canvas renders the rectangle
-```
+```bash
+# Development server
+pnpm dev
 
-### 4. **Chat System**
+# Production build
+pnpm build
 
-```
-User types message and clicks send
-       ↓
-Frontend sends: { type: "chat", message: "Hello!", roomId: "1" }
-       ↓
-WebSocket server receives message
-       ↓
-Server saves chat to database (Chat table)
-       ↓
-Server broadcasts to all users in room
-       ↓
-All users see the new chat message
+# Start production server
+pnpm start
+
+# Lint
+pnpm lint
+
+# Type-check
+pnpm check-types
 ```
 
-### 5. **Canvas State Persistence**
+### Backend Scripts (apps/http-backend, apps/ws-backend)
 
+```bash
+# Build TypeScript
+pnpm build
+
+# Start server
+pnpm start
+
+# Development (build + start)
+pnpm dev
 ```
-New user joins room
-       ↓
-Canvas page fetches existing drawings: GET /api/v1/rooms/:id/drawings
-       ↓
-HTTP Backend queries database for all DrawingElements in room
-       ↓
-Frontend receives array of drawing elements
-       ↓
-Canvas renders all existing drawings
-       ↓
-User sees the current state of the canvas
-       ↓
-WebSocket connection established for real-time updates
+
+### Database Scripts (packages/database)
+
+```bash
+# Generate Prisma Client
+pnpm prisma generate
+
+# Create migration
+pnpm prisma migrate dev --name migration_name
+
+# Apply migrations
+pnpm prisma migrate deploy
+
+# Open Prisma Studio
+pnpm prisma studio
+
+# Reset database
+pnpm prisma migrate reset
 ```
 
 ---
 
-## 🎨 Drawing Implementation Details
+## 🔧 Troubleshooting
 
-### Canvas Rendering
-- Uses HTML5 `<canvas>` element
-- Drawing context: `2d`
-- Coordinate system: Top-left origin (0,0)
+### Common Issues
 
-### Supported Drawing Types
+#### 1. **Cannot connect to database**
 
-1. **Rectangle**
-   - Properties: `x, y, width, height, strokeColor, fillColor, strokeWidth, opacity`
-   - Rendered with: `ctx.strokeRect()` and `ctx.fillRect()`
+**Error:** `PrismaClientInitializationError: Can't reach database server`
 
-2. **Circle**
-   - Properties: `x, y, radius, strokeColor, fillColor, strokeWidth, opacity`
-   - Rendered with: `ctx.arc()`
+**Solution:**
+- Verify PostgreSQL is running
+- Check `DATABASE_URL` in `.env`
+- Ensure database exists
+- Test connection: `psql "postgresql://user:pass@localhost:5432/draw_project"`
 
-3. **Line**
-   - Properties: `x, y, width (endX), height (endY), strokeColor, strokeWidth, opacity`
-   - Rendered with: `ctx.beginPath()`, `ctx.moveTo()`, `ctx.lineTo()`
+#### 2. **401 Unauthorized on API calls**
 
-4. **Pencil/Freehand**
-   - Properties: `path (array of {x, y} points), strokeColor, strokeWidth, opacity`
-   - Path stored as JSON string in database
-   - Rendered with: `ctx.lineTo()` for each point
+**Solution:**
+- Ensure you're signed in
+- Check that JWT token is in `localStorage` (key: `token`)
+- Verify `Authorization` header is being sent
+- Check JWT_SECRET matches between frontend and backend
 
-5. **Text**
-   - Properties: `x, y, text, strokeColor, strokeWidth (fontSize), opacity`
-   - Rendered with: `ctx.fillText()`
+#### 3. **WebSocket connection failed**
+
+**Solution:**
+- Verify WebSocket backend is running on port 8080
+- Check `NEXT_PUBLIC_WS_BACKEND` in frontend config
+- Ensure JWT token is valid
+- Check browser console for WebSocket errors
+
+#### 4. **CORS errors in production**
+
+**Solution:**
+- Update CORS origins in `apps/http-backend/src/index.ts`
+- Add your frontend domain to allowed origins
+- Ensure credentials are enabled: `credentials: true`
+- See [CORS_FIX_GUIDE.md](CORS_FIX_GUIDE.md)
+
+#### 5. **Prisma Client not found**
+
+**Error:** `@prisma/client did not initialize yet`
+
+**Solution:**
+```bash
+cd packages/database
+pnpm prisma generate
+cd ../..
+pnpm build
+```
+
+#### 6. **Port already in use**
+
+**Error:** `EADDRINUSE: address already in use`
+
+**Solution:**
+```bash
+# Find process using the port (e.g., 3000)
+# Windows
+netstat -ano | findstr :3000
+
+# macOS/Linux
+lsof -i :3000
+
+# Kill the process
+# Windows
+taskkill /PID <PID> /F
+
+# macOS/Linux
+kill -9 <PID>
+```
+
+### Additional Resources
+
+- [TROUBLESHOOTING_DEPLOYMENT.md](TROUBLESHOOTING_DEPLOYMENT.md) - Deployment-specific issues
+- [DOCKER_FIXES.md](DOCKER_FIXES.md) - Docker-related troubleshooting
+- [CORS_FIX_GUIDE.md](CORS_FIX_GUIDE.md) - CORS configuration guide
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+Contributions are welcome! Please follow these steps:
 
 1. **Fork the repository**
 2. **Create a feature branch**
@@ -857,7 +937,7 @@ We welcome contributions! Here's how you can help:
    ```
 3. **Commit your changes**
    ```bash
-   git commit -m 'Add some amazing feature'
+   git commit -m "Add some amazing feature"
    ```
 4. **Push to the branch**
    ```bash
@@ -865,17 +945,16 @@ We welcome contributions! Here's how you can help:
    ```
 5. **Open a Pull Request**
 
-### Development Guidelines
+### Code Style
 
-- Follow TypeScript best practices
-- Write meaningful commit messages
-- Add comments for complex logic
-- Test your changes thoroughly
-- Update documentation if needed
+- Use **TypeScript** for all new code
+- Follow the existing **ESLint** configuration
+- Run `pnpm format` before committing
+- Ensure all tests pass: `pnpm test`
 
 ---
 
-## 📝 License
+## 📄 License
 
 This project is licensed under the **ISC License**.
 
@@ -883,64 +962,22 @@ This project is licensed under the **ISC License**.
 
 ## 👨‍💻 Author
 
-**Anurag07-07**
-
+**Anurag**
 - GitHub: [@Anurag07-07](https://github.com/Anurag07-07)
 
 ---
 
 ## 🙏 Acknowledgments
 
-- **Excalidraw** - Inspiration for the drawing features
-- **Next.js Team** - Amazing React framework
-- **Vercel** - For Turborepo
-- **Prisma Team** - Excellent ORM
-- **Framer Motion** - Beautiful animations
+- Inspired by [Excalidraw](https://excalidraw.com/)
+- Built with [Next.js](https://nextjs.org/)
+- Powered by [Turborepo](https://turbo.build/repo)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
 
 ---
 
-## 📚 Additional Resources
+<div align="center">
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Prisma Documentation](https://www.prisma.io/docs)
-- [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
-- [Turborepo Documentation](https://turborepo.org/docs)
-- [Docker Documentation](https://docs.docker.com/)
+**⭐ If you find this project helpful, please consider giving it a star! ⭐**
 
----
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**1. Database Connection Error**
-```bash
-# Make sure PostgreSQL is running
-# Check DATABASE_URL in .env
-# Run: pnpm prisma generate && pnpm prisma migrate dev
-```
-
-**2. WebSocket Connection Failed**
-```bash
-# Ensure JWT token is valid
-# Check WebSocket server is running on port 8080
-# Verify CORS settings
-```
-
-**3. Port Already in Use**
-```bash
-# Change ports in respective package.json files
-# Update environment variables accordingly
-```
-
-**4. Prisma Client Not Found**
-```bash
-cd packages/database
-pnpm prisma generate
-```
-
----
-
-**Made with ❤️ and ☕ by Anurag**
-
-Happy Drawing! 🎨✨
+</div>
