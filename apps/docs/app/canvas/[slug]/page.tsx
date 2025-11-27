@@ -311,16 +311,9 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
     }
   }
 
-  // Mouse handlers
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  // Shared drawing logic
+  const onStartDrawing = (x: number, y: number) => {
     if (currentTool === 'select') return
-
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
 
     setIsDrawing(true)
 
@@ -366,15 +359,8 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
     }
   }
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const onDrawing = (x: number, y: number) => {
     if (!isDrawing || !currentElement) return
-
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
 
     if (currentTool === 'pencil' && currentElement.path) {
       setCurrentElement({
@@ -404,7 +390,7 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
     }
   }
 
-  const handleMouseUp = () => {
+  const onStopDrawing = () => {
     if (isDrawing && currentElement && currentTool !== 'text') {
       const element = currentElement as DrawingElement
       element.id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36)
@@ -414,6 +400,60 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
     }
     setIsDrawing(false)
     setCurrentElement(null)
+  }
+
+  // Mouse handlers
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    onStartDrawing(x, y)
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    onDrawing(x, y)
+  }
+
+
+  const handleMouseUp = () => {
+    onStopDrawing()
+  }
+
+  // Touch handlers
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    // Prevent default to stop scrolling
+    // e.preventDefault() 
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const touch = e.touches[0]
+    if (!touch) return
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+    onStartDrawing(x, y)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    // e.preventDefault()
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const touch = e.touches[0]
+    if (!touch) return
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+    onDrawing(x, y)
+  }
+
+  const handleTouchEnd = () => {
+    onStopDrawing()
   }
 
   const sendMessage = () => {
@@ -588,7 +628,10 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          className="border border-white/20 bg-white cursor-crosshair shadow-2xl"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="border border-white/20 bg-white cursor-crosshair shadow-2xl touch-none"
         />
       </div>
 
