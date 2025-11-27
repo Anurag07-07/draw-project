@@ -11,11 +11,9 @@ app.use(e.json())
 
 
 app.use(cors({
-  origin:[
-    // "http://localhost:3001",
-    "https://draw-project-7.onrender.com",
-    // "https://draw-project-8.onrender.com","https://draw-project-docs-cccaqi22c-anurag07-07s-projects.vercel.app"
-    ],
+  origin: [
+   "draw-project-docs.vercel.app"
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
