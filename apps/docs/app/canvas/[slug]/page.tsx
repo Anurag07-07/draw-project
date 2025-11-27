@@ -20,7 +20,7 @@ import {
   Share2
 } from "lucide-react"
 import { Toaster, toast } from "sonner"
-import axios from "axios"
+import api from "../../api"
 import { HTTP_BACKEND, WS_BACKEND } from "../../config"
 
 // Types
@@ -88,9 +88,7 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
         console.log("Loading room:", roomSlug)
 
         // Get room info
-        const roomResponse = await axios.get(`${HTTP_BACKEND}/api/v1/room/${roomSlug}`, {
-          withCredentials: true
-        })
+        const roomResponse = await api.get(`/api/v1/room/${roomSlug}`)
 
         console.log("Room response:", roomResponse.data)
         const room = roomResponse.data.room
@@ -104,10 +102,7 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
 
         // Load existing drawings
         try {
-          const drawingsResponse = await axios.get(
-            `${HTTP_BACKEND}/api/v1/rooms/${room.id}/drawings`,
-            { withCredentials: true }
-          )
+          const drawingsResponse = await api.get(`/api/v1/rooms/${room.id}/drawings`)
           setElements(drawingsResponse.data.drawings || [])
         } catch (err) {
           console.log("No existing drawings or endpoint not available yet")
@@ -142,11 +137,8 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
 
     const connectWebSocket = async () => {
       try {
-        // Fetch a fresh token for WebSocket connection
-        const tokenResponse = await axios.get(`${HTTP_BACKEND}/api/v1/token`, {
-          withCredentials: true
-        })
-        const token = tokenResponse.data.token
+        // Use existing token from localStorage
+        const token = localStorage.getItem('token');
 
         if (!token) {
           toast.error("Authentication failed")
