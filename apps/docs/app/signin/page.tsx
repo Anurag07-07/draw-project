@@ -39,8 +39,22 @@ function SigninContent() {
       })
 
       if (response.data || response) {
+        console.log('✅ Sign in response:', response.data);
+        console.log('🔑 Token received:', response.data.token);
+
         toast.success(`Welcome back!`)
+
+        // Store token in both cookies and localStorage for redundancy
         Cookies.set("token", response.data.token, { expires: 7 });
+        console.log('🍪 Token stored in cookies');
+
+        localStorage.setItem('token', response.data.token);
+        console.log('💾 Token stored in localStorage');
+
+        // Verify it was stored
+        const storedToken = localStorage.getItem('token');
+        console.log('✔️ Token verification:', storedToken ? 'exists in localStorage' : 'NOT in localStorage');
+
         if (redirect) {
           router.push(redirect)
         } else {

@@ -11,7 +11,7 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // Get token from localStorage
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     
     // If token exists, add to Authorization header
     if (token) {
@@ -31,7 +31,11 @@ api.interceptors.response.use(
   (error) => {
     // If 401 Unauthorized, clear token and redirect to login
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
+      console.error('❌ Got 401 error from API');
+      console.error('Request URL:', error.config?.url);
+      console.error('Error response:', error.response?.data);
+      console.log('🗑️ Removing token from localStorage');
+      localStorage.removeItem('token');
       // Optionally redirect to login page
       // window.location.href = '/signin';
     }

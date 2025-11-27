@@ -12,10 +12,9 @@ import {
   Grid3x3,
   Search
 } from "lucide-react"
-import axios from "axios"
+import api from "../api"
 import Link from "next/link"
 import { Toaster, toast } from "sonner"
-import { HTTP_BACKEND } from "../config"
 
 interface Room {
   id: number
@@ -128,9 +127,9 @@ export default function RoomsPage() {
   const fetchRooms = async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(`${HTTP_BACKEND}/api/v1/rooms`, {
-        withCredentials: true
-      })
+      // Use the configured api instance instead of plain axios
+      // This ensures the Authorization header is included
+      const response = await api.get(`/api/v1/rooms`)
       setRooms(response.data.rooms)
     } catch (error) {
       console.error(error)

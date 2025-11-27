@@ -16,7 +16,7 @@ import {
   Loader2,
   Calendar
 } from "lucide-react"
-import axios from "axios"
+import api from "../api"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Toaster, toast } from "sonner"
@@ -136,18 +136,28 @@ export default function DashboardPage() {
   const router = useRouter()
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    console.log('🔍 Dashboard - Token check:', token ? 'exists' : 'missing');
+
+    if (!token) {
+      console.log('❌ No token found, redirecting to signin');
+      router.push('/signin?redirect=/dashboard');
+      return;
+    }
+
+    console.log('✅ Token found, fetching rooms');
     fetchRooms()
   }, [])
 
   const fetchRooms = async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(`${HTTP_BACKEND}/api/v1/rooms`, {
-        withCredentials: true
-      })
+      console.log('📡 Fetching rooms from API...');
+      const response = await api.get(`/api/v1/rooms`)
+      console.log('✅ Rooms fetched:', response.data.rooms);
       setRooms(response.data.rooms)
     } catch (error) {
-      console.error(error)
+      console.error('❌ Error fetching rooms:', error)
       toast.error("Failed to fetch rooms")
     } finally {
       setIsLoading(false)
@@ -164,9 +174,7 @@ export default function DashboardPage() {
 
     try {
       setIsCreating(true)
-      await axios.post(`${HTTP_BACKEND}/api/v1/create-room`, slug, {
-        withCredentials: true
-      })
+      await api.post(`/api/v1/create-room`, slug)
       toast.success("Room created successfully!")
       setSlug({ slug: "" })
       await fetchRooms() // Refresh rooms list
