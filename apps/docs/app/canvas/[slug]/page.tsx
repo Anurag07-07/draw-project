@@ -597,8 +597,20 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
           </div>
         </div>
         <div className="flex gap-2">
+          <button onClick={() => {
+            if (typeof window !== 'undefined') {
+              navigator.clipboard.writeText(window.location.href)
+              toast.success("Link copied to clipboard!")
+            }
+          }} className="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors" title="Share">
+            <Share2 className="w-5 h-5" />
+          </button>
+          <button onClick={() => setChatOpen(true)} className="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors" title="Chat">
+            <MessageSquare className="w-5 h-5" />
+          </button>
+          <div className="w-px h-10 bg-white/10 mx-2" />
           <button onClick={() => setZoom(z => Math.max(0.1, z - 0.1))} className="p-2 bg-white/5 rounded">-</button>
-          <span className="p-2 text-sm">{Math.round(zoom * 100)}%</span>
+          <span className="p-2 text-sm flex items-center">{Math.round(zoom * 100)}%</span>
           <button onClick={() => setZoom(z => Math.min(5, z + 0.1))} className="p-2 bg-white/5 rounded">+</button>
         </div>
       </div>
