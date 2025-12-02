@@ -72,6 +72,9 @@ importers:
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.2.0)
+      react-turnstile:
+        specifier: ^1.1.4
+        version: 1.1.4(react-dom@19.1.0(react@19.2.0))(react@19.2.0)
       shadcn:
         specifier: ^3.5.0
         version: 3.5.0(@types/node@22.15.3)(typescript@5.9.2)
@@ -124,6 +127,9 @@ importers:
       '@types/express':
         specifier: ^5.0.5
         version: 5.0.5
+      '@types/express-rate-limit':
+        specifier: ^6.0.0
+        version: 6.0.2(express@5.1.0)
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -142,6 +148,9 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.1.0
+      express-rate-limit:
+        specifier: ^7.5.1
+        version: 7.5.1(express@5.1.0)
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -937,6 +946,10 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/express-rate-limit@6.0.2':
+    resolution: {integrity: sha512-e1xZLOOlxCDvplAGq7rDcXtbdBu2CWRsMjaIu1LVqGxWtKvwr884YE5mPs3IvHeG/OMDhf24oTaqG5T1bV3rBQ==}
+    deprecated: This is a stub types definition. express-rate-limit provides its own type definitions, so you do not need this installed.
 
   '@types/express-serve-static-core@5.1.0':
     resolution: {integrity: sha512-jnHMsrd0Mwa9Cf4IdOzbz543y4XJepXrbia2T4b6+spXC2We3t1y6K44D3mR8XMFSXMCf3/l7rCgddfx7UNVBA==}
@@ -2655,6 +2668,12 @@ packages:
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
+  react-turnstile@1.1.4:
+    resolution: {integrity: sha512-oluyRWADdsufCt5eMqacW4gfw8/csr6Tk+fmuaMx0PWMKP1SX1iCviLvD2D5w92eAzIYDHi/krUWGHhlfzxTpQ==}
+    peerDependencies:
+      react: '>= 16.13.1'
+      react-dom: '>= 16.13.1'
+
   react@19.2.0:
     resolution: {integrity: sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==}
     engines: {node: '>=0.10.0'}
@@ -3828,6 +3847,12 @@ snapshots:
       dotenv: 17.2.3
 
   '@types/estree@1.0.8': {}
+
+  '@types/express-rate-limit@6.0.2(express@5.1.0)':
+    dependencies:
+      express-rate-limit: 7.5.1(express@5.1.0)
+    transitivePeerDependencies:
+      - express
 
   '@types/express-serve-static-core@5.1.0':
     dependencies:
@@ -5666,6 +5691,11 @@ snapshots:
       scheduler: 0.26.0
 
   react-is@16.13.1: {}
+
+  react-turnstile@1.1.4(react-dom@19.1.0(react@19.2.0))(react@19.2.0):
+    dependencies:
+      react: 19.2.0
+      react-dom: 19.1.0(react@19.2.0)
 
   react@19.2.0: {}
 

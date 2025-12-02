@@ -3,7 +3,8 @@
   "ui": "tui",
   "globalDependencies": [".env"],
   "globalEnv": [
-    "JWT_SECRET"
+    "JWT_SECRET",
+    "CLOUDFLARE_SECRET_KEY"
   ],
   "tasks": {
     "build": {

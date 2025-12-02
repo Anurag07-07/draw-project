@@ -1,62 +1,56 @@
 version: '3.8'
 
 services:
-  # Next.js Frontend Application
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: frontend
-    container_name: draw-project-frontend
-    ports:
-      - "3001:3001"
+  db:
+    image: postgres:14-alpine
     environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_HTTP_BACKEND_URL=${NEXT_PUBLIC_HTTP_BACKEND_URL:-http://localhost:3000}
-      - NEXT_PUBLIC_WS_BACKEND_URL=${NEXT_PUBLIC_WS_BACKEND_URL:-ws://localhost:8080}
-    depends_on:
-      - http-backend
-      - ws-backend
-    restart: unless-stopped
-    networks:
-      - draw-network
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: draw_project
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
-  # HTTP Backend API
   http-backend:
     build:
       context: .
       dockerfile: Dockerfile
       target: http-backend
-    container_name: draw-project-http-backend
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=${DATABASE_URL}
-      - PORT=3000
-    restart: unless-stopped
-    networks:
-      - draw-network
+      DATABASE_URL: postgresql://postgres:password@db:5432/draw_project
+      JWT_SECRET: dev-secret
+    depends_on:
+      - db
 
-  # WebSocket Backend
   ws-backend:
     build:
       context: .
       dockerfile: Dockerfile
       target: ws-backend
-    container_name: draw-project-ws-backend
     ports:
       - "8080:8080"
     environment:
-      - NODE_ENV=production
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=${DATABASE_URL}
-      - PORT=8080
-    restart: unless-stopped
-    networks:
-      - draw-network
+      DATABASE_URL: postgresql://postgres:password@db:5432/draw_project
+      JWT_SECRET: dev-secret
+    depends_on:
+      - db
 
-networks:
-  draw-network:
-    driver: bridge
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    ports:
+      - "3001:3001"
+    environment:
+      NEXT_PUBLIC_HTTP_BACKEND: http://localhost:3000
+      NEXT_PUBLIC_WS_BACKEND: ws://localhost:8080
+    depends_on:
+      - http-backend
+      - ws-backend
+
+volumes:
+  db_data:

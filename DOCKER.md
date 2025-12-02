@@ -1,131 +1,119 @@
-# Docker Deployment Guide
+# 🐳 Docker Setup Guide
 
-This guide explains how to build and run the Draw Project using Docker.
+This guide explains how to run the Draw Project using Docker and Docker Compose.
 
 ## Prerequisites
 
-- Docker installed on your system
-- Docker Compose installed (usually comes with Docker Desktop)
-- `.env` file configured with required environment variables
+- [Docker](https://docs.docker.com/get-docker/) installed
+- [Docker Compose](https://docs.docker.com/compose/install/) installed (usually included with Docker Desktop)
 
-## Environment Variables
+## 🚀 Quick Start (Docker Compose)
 
-Create a `.env` file in the root directory with the following variables:
+The easiest way to run the entire stack is using Docker Compose.
 
-```env
-# JWT Secret for authentication
-JWT_SECRET=your_secret_key_here
+### 1. Start All Services
 
-# Database connection string
-DATABASE_URL=your_database_url_here
-
-# Backend URLs (optional, defaults provided)
-NEXT_PUBLIC_HTTP_BACKEND_URL=http://localhost:3000
-NEXT_PUBLIC_WS_BACKEND_URL=ws://localhost:8080
-```
-
-## Quick Start with Docker Compose
-
-### Build and run all services:
 ```bash
-docker-compose up --build
+docker-compose up -d --build
 ```
 
-### Run in detached mode (background):
-```bash
-docker-compose up -d
-```
+This command will:
+1. Build the images for Frontend, HTTP Backend, and WebSocket Backend.
+2. Pull the PostgreSQL image.
+3. Start all containers in detached mode.
 
-### Stop all services:
-```bash
-docker-compose down
-```
+### 2. Verify Services
 
-### View logs:
-```bash
-# All services
-docker-compose logs -f
+Check if containers are running:
 
-# Specific service
-docker-compose logs -f frontend
-docker-compose logs -f http-backend
-docker-compose logs -f ws-backend
-```
-
-## Building Individual Services
-
-### Build Frontend Only:
-```bash
-docker build --target frontend -t draw-project-frontend .
-docker run -p 3001:3001 --env-file .env draw-project-frontend
-```
-
-### Build HTTP Backend Only:
-```bash
-docker build --target http-backend -t draw-project-http-backend .
-docker run -p 3000:3000 --env-file .env draw-project-http-backend
-```
-
-### Build WebSocket Backend Only:
-```bash
-docker build --target ws-backend -t draw-project-ws-backend .
-docker run -p 8080:8080 --env-file .env draw-project-ws-backend
-```
-
-**Note**: JWT_SECRET and other secrets are passed at **runtime** via environment variables, not at build time. This is a security best practice as build arguments can be inspected in image layers.
-
-## Accessing the Application
-
-Once all services are running:
-
-- **Frontend (Next.js)**: http://localhost:3001
-- **HTTP Backend API**: http://localhost:3000
-- **WebSocket Backend**: ws://localhost:8080
-
-## Production Deployment
-
-For production deployment, make sure to:
-
-1. Set strong `JWT_SECRET` value
-2. Configure proper `DATABASE_URL`
-3. Update backend URLs in environment variables
-4. Use a reverse proxy (nginx/traefik) for SSL termination
-5. Configure proper CORS settings
-
-## Troubleshooting
-
-### Build failures:
-```bash
-# Clean build cache
-docker-compose build --no-cache
-```
-
-### Port conflicts:
-If ports are already in use, modify the ports in `docker-compose.yml`:
-```yaml
-ports:
-  - "NEW_PORT:CONTAINER_PORT"
-```
-
-### Checking container status:
 ```bash
 docker-compose ps
 ```
 
-### Restart specific service:
+You should see 4 services running:
+- `draw-project-frontend-1` (Port 3001)
+- `draw-project-http-backend-1` (Port 3000)
+- `draw-project-ws-backend-1` (Port 8080)
+- `draw-project-db-1` (Port 5432)
+
+### 3. Access the Application
+
+- **Frontend:** [http://localhost:3001](http://localhost:3001)
+- **HTTP Backend:** [http://localhost:3000](http://localhost:3000)
+- **WebSocket Backend:** [ws://localhost:8080](ws://localhost:8080)
+
+### 4. Stop Services
+
 ```bash
-docker-compose restart frontend
+docker-compose down
 ```
 
-## Architecture
+To stop and remove volumes (reset database):
 
-The Dockerfile uses multi-stage builds with the following stages:
+```bash
+docker-compose down -v
+```
 
-1. **base**: Sets up pnpm and copies package files
-2. **dependencies**: Installs all dependencies
-3. **builder**: Builds all applications using Turbo
-4. **frontend**: Production Next.js runner
-5. **http-backend**: Production HTTP backend runner
-6. **ws-backend**: Production WebSocket backend runner
+## 🛠 Building Individual Images
 
-This approach minimizes final image sizes and optimizes build caching.
+You can build specific images using the multi-stage Dockerfile.
+
+### Frontend
+
+```bash
+docker build --target frontend -t draw-frontend .
+```
+
+### HTTP Backend
+
+```bash
+docker build --target http-backend -t draw-http-backend .
+```
+
+### WebSocket Backend
+
+```bash
+docker build --target ws-backend -t draw-ws-backend .
+```
+
+## ⚙️ Configuration
+
+The `docker-compose.yml` file comes with default configuration for development.
+
+### Environment Variables
+
+You can override environment variables in `docker-compose.yml` or by creating a `.env` file in the root directory.
+
+**Default Database Credentials:**
+- User: `postgres`
+- Password: `password`
+- Database: `draw_project`
+
+**Backend URLs:**
+- HTTP Backend: `http://localhost:3000`
+- WebSocket Backend: `ws://localhost:8080`
+
+## 🐛 Troubleshooting
+
+### Database Connection Issues
+
+If the backends cannot connect to the database:
+1. Ensure the `db` service is healthy.
+2. Check `DATABASE_URL` in `docker-compose.yml`. It should use the service name `db` as the hostname (e.g., `postgresql://postgres:password@db:5432/draw_project`).
+
+### Port Conflicts
+
+If ports 3000, 3001, 8080, or 5432 are already in use on your host machine, modify the `ports` mapping in `docker-compose.yml`:
+
+```yaml
+ports:
+  - "3002:3001" # Host port 3002 -> Container port 3001
+```
+
+### Rebuilding
+
+If you make changes to the code, you need to rebuild the images:
+
+```bash
+docker-compose up -d --build
+```

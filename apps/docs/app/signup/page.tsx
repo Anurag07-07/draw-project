@@ -17,7 +17,8 @@ import {
 import axios, { AxiosError } from "axios"
 import { Toaster, toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { HTTP_BACKEND } from "../config"
+import { HTTP_BACKEND, TURNSTILE_SITE_KEY } from "../config"
+import Turnstile from "react-turnstile"
 
 // --- Components ---
 
@@ -62,7 +63,7 @@ const PasswordStrengthMeter = ({ password }: { password: string }) => {
 
 // 2. Main Signup Component
 export default function Signup() {
-  const [formData, setFormData] = useState({ username: "", password: "" })
+  const [formData, setFormData] = useState({ username: "", password: "", turnstileToken: "" })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -87,6 +88,11 @@ export default function Signup() {
 
     if (formData.password.length < 6) {
       toast.error("Password is too short");
+      return;
+    }
+
+    if (!formData.turnstileToken) {
+      toast.error("Please complete the CAPTCHA");
       return;
     }
 
@@ -266,6 +272,15 @@ export default function Signup() {
                         </motion.div>
                       )}
                     </AnimatePresence>
+                  </div>
+
+                  {/* Turnstile CAPTCHA */}
+                  <div className="flex justify-center pt-2">
+                    <Turnstile
+                      sitekey={TURNSTILE_SITE_KEY}
+                      onVerify={(token) => setFormData(prev => ({ ...prev, turnstileToken: token }))}
+                      theme="dark"
+                    />
                   </div>
 
                   {/* Submit Button */}

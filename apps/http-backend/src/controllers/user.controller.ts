@@ -1,13 +1,16 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import {Request,Response} from 'express'
-import {prisma} from '@repo/db/db'
-import {UserSignupValidation,UserSigninValidation,UserChatValidation} from '@repo/common/common'
+import { Request, Response } from 'express'
+import { prisma } from '@repo/db/db'
+import { UserSignupValidation, UserSigninValidation, UserChatValidation } from '@repo/common/common'
 
+// Extend Request interface to include userId
+interface AuthenticatedRequest extends Request {
+  userId?: string;
+}
 
 export const SignUp = async (req: Request, res: Response) => {
   const checkValidation = UserSignupValidation.safeParse(req.body);
-
 
   if (!checkValidation.success) {
     return res.status(400).json({
@@ -16,9 +19,27 @@ export const SignUp = async (req: Request, res: Response) => {
     });
   }
 
-  const { username, password } = req.body;
+  const { username, password, turnstileToken } = req.body;
 
   try {
+    // Turnstile Validation
+    const formData = new FormData()
+    formData.append('secret', process.env.CLOUDFLARE_SECRET_KEY as string)
+    formData.append('response', turnstileToken)
+
+    const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: formData
+    });
+
+    const turnstileResult = await turnstileResponse.json();
+
+    if (!turnstileResult.success) {
+      return res.status(400).json({
+        message: "Invalid CAPTCHA token",
+      });
+    }
+
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
       where: { username },
@@ -67,7 +88,25 @@ export const SignIn = async (req: Request, res: Response) => {
   }
 
   try {
-    const { username, password } = req.body;
+    const { username, password, turnstileToken } = req.body;
+
+    // Turnstile Validation
+    const formData = new FormData()
+    formData.append('secret', process.env.CLOUDFLARE_SECRET_KEY as string)
+    formData.append('response', turnstileToken)
+
+    const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: formData
+    });
+
+    const turnstileResult = await turnstileResponse.json();
+
+    if (!turnstileResult.success) {
+      return res.status(400).json({
+        message: "Invalid CAPTCHA token",
+      });
+    }
 
     // Check if user exists
     const check = await prisma.user.findFirst({
@@ -103,7 +142,7 @@ export const SignIn = async (req: Request, res: Response) => {
       httpOnly: true,
       sameSite: "lax", // Changed from 'strict' to allow cross-origin requests
       path: "/",
-      maxAge: 60 * 60 * 1000, 
+      maxAge: 60 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -129,7 +168,7 @@ export const roomCreation = async (req: Request, res: Response) => {
   }
 
   try {
-    const userId = req.userId;
+    const userId = (req as AuthenticatedRequest).userId;
     if (!userId) {
       return res.status(401).json({
         message: "Unauthorized - please login first",
@@ -177,19 +216,16 @@ export const getChat = async (req: Request, res: Response) => {
         roomId: roomId,
       },
       orderBy: {
-         id: "asc"
+        id: "asc"
       }
     });
-
-    console.log(message);
-    
 
     if (!message) {
       return res.status(404).json({ message: "Room not found" });
     }
 
     return res.status(200).json({
-      chats:message 
+      chats: message
     });
 
   } catch (error) {
@@ -214,11 +250,12 @@ export const Logout = (req: Request, res: Response) => {
 };
 
 
-export const getRooms = async(req:Request,res:Response)=>{
+export const getRooms = async (req: Request, res: Response) => {
   try {
+    const userId = (req as AuthenticatedRequest).userId;
     const rooms = await prisma.room.findMany({
-      where:{
-        adminId: req.userId
+      where: {
+        adminId: userId
       }
     })
 
@@ -291,7 +328,7 @@ export const getRoomBySlug = async (req: Request, res: Response) => {
 
 export const getToken = async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
+    const userId = (req as AuthenticatedRequest).userId;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }

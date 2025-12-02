@@ -8,7 +8,8 @@ import { toast } from "sonner"
 import Cookies from 'js-cookie'
 import { motion } from "framer-motion"
 import { Loader2, Mail, Lock, ArrowRight, Sparkles } from "lucide-react"
-import { HTTP_BACKEND } from "../config"
+import { HTTP_BACKEND, TURNSTILE_SITE_KEY } from "../config"
+import Turnstile from 'react-turnstile'
 
 interface IUser {
   username: string,
@@ -21,6 +22,7 @@ function SigninContent() {
     password: ""
   })
   const [loading, setLoading] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect')
@@ -32,28 +34,29 @@ function SigninContent() {
 
   async function SubmitHandler(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    // Validate Turnstile token
+    if (!turnstileToken) {
+      toast.error("Please complete the CAPTCHA verification")
+      return
+    }
+
     setLoading(true)
     try {
-      const response = await axios.post(`${HTTP_BACKEND}/api/v1/signin`, user, {
+      const response = await axios.post(`${HTTP_BACKEND}/api/v1/signin`, {
+        ...user,
+        turnstileToken
+      }, {
         withCredentials: true
       })
 
       if (response.data || response) {
-        console.log('✅ Sign in response:', response.data);
-        console.log('🔑 Token received:', response.data.token);
 
         toast.success(`Welcome back!`)
 
-        // Store token in both cookies and localStorage for redundancy
         Cookies.set("token", response.data.token, { expires: 7 });
-        console.log('🍪 Token stored in cookies');
 
         localStorage.setItem('token', response.data.token);
-        console.log('💾 Token stored in localStorage');
-
-        // Verify it was stored
-        const storedToken = localStorage.getItem('token');
-        console.log('✔️ Token verification:', storedToken ? 'exists in localStorage' : 'NOT in localStorage');
 
         if (redirect) {
           router.push(redirect)
@@ -73,9 +76,7 @@ function SigninContent() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-black via-neutral-950 to-black relative overflow-hidden font-sans selection:bg-blue-500/30">
-      {/* Enhanced Dynamic Background */}
       <div className="absolute inset-0 w-full h-full">
-        {/* Animated Gradient Orbs */}
         <motion.div
           animate={{
             scale: [1, 1.2, 1],
@@ -197,6 +198,26 @@ function SigninContent() {
                     className="w-full bg-neutral-950/60 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-500/60 focus:border-blue-500/60 focus:bg-neutral-950/80 transition-all duration-300 hover:border-white/20"
                   />
                 </div>
+              </motion.div>
+
+              {/* Turnstile CAPTCHA */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45, duration: 0.5 }}
+                className="flex justify-center"
+              >
+                <Turnstile
+                  sitekey={TURNSTILE_SITE_KEY}
+                  onVerify={(token) => setTurnstileToken(token)}
+                  onExpire={() => setTurnstileToken(null)}
+                  onError={() => {
+                    setTurnstileToken(null)
+                    toast.error("CAPTCHA verification failed. Please try again.")
+                  }}
+                  theme="dark"
+                  size="normal"
+                />
               </motion.div>
 
               {/* Submit Button */}
