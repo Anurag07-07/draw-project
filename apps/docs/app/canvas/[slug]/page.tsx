@@ -19,7 +19,8 @@ import {
   Loader2,
   Share2,
   Hand,
-  MousePointer2
+  MousePointer2,
+  Eraser
 } from "lucide-react"
 import { Toaster, toast } from "sonner"
 import api from "../../api"
@@ -52,7 +53,7 @@ interface ChatMessage {
   }
 }
 
-type ToolType = 'rectangle' | 'circle' | 'line' | 'pencil' | 'text' | 'select' | 'hand'
+type ToolType = 'rectangle' | 'circle' | 'line' | 'pencil' | 'text' | 'select' | 'hand' | 'eraser'
 
 export default function CanvasPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = use(params)
@@ -402,6 +403,21 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
       return
     }
 
+    if (currentTool === 'eraser') {
+      const clickedElement = [...elements].reverse().find(el => isPointInElement(x, y, el))
+      if (clickedElement) {
+        setElements(prev => prev.filter(el => el.id !== clickedElement.id))
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+          wsRef.current.send(JSON.stringify({
+            type: 'delete_draw',
+            roomId: roomId?.toString(),
+            elementId: clickedElement.id
+          }))
+        }
+      }
+      return
+    }
+
     setIsDrawing(true)
 
     if (currentTool === 'pencil') {
@@ -571,7 +587,8 @@ export default function CanvasPage({ params }: { params: Promise<{ slug: string 
     { type: 'rectangle' as ToolType, icon: Square, label: 'Rectangle' },
     { type: 'circle' as ToolType, icon: Circle, label: 'Circle' },
     { type: 'line' as ToolType, icon: Minus, label: 'Line' },
-    { type: 'text' as ToolType, icon: Type, label: 'Text' }
+    { type: 'text' as ToolType, icon: Type, label: 'Text' },
+    { type: 'eraser' as ToolType, icon: Eraser, label: 'Eraser' }
   ]
 
   // Show loading if room not loaded
